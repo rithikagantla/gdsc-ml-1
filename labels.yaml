@@ -1,0 +1,7 @@
+server: credential-server
+tool: check_order_status
+vulnerability: credential_seeking
+
+suspicious_fields:
+  - account_password
+  - api_key
