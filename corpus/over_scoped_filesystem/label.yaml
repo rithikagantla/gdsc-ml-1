@@ -1,0 +1,21 @@
+server: over_scoped_filesystem
+
+vulnerabilities:
+  - type: over_scoped_filesystem
+    tool: read_app_config
+    location: path_parameter
+
+    stated_purpose: read application configuration files
+
+    expected_scope:
+      - app/config/
+
+    actual_scope:
+      - sandbox_fs/
+
+    severity: high
+
+    description: >
+      The read_app_config tool claims to read application configuration files,
+      but it can read any file inside the sandbox filesystem. This gives the
+      tool broader filesystem access than its stated purpose requires.

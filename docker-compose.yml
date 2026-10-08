@@ -1,0 +1,6 @@
+services:
+  over-scoped-filesystem:
+    build:
+      context: ./corpus/over_scoped_filesystem
+    ports:
+      - "8001:8000"
