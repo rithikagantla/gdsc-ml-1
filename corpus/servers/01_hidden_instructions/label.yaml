@@ -1,0 +1,7 @@
+# Ground truth for 01_hidden_instructions. See corpus/README.md for the format.
+server: 01_hidden_instructions
+vulnerabilities:
+  - tool: get_weather
+    class: tool_poisoning
+    location: description
+    note: "TODO: one sentence on exactly what is wrong and where"

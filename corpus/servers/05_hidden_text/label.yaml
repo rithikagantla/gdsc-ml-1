@@ -1,0 +1,7 @@
+# Ground truth for 05_hidden_text. See corpus/README.md for the format.
+server: 05_hidden_text
+vulnerabilities:
+  - tool: summarize_text
+    class: hidden_text
+    location: description
+    note: "TODO: one sentence on exactly what is wrong and where"

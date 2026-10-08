@@ -1,0 +1,46 @@
+# OWNER: Daniel (packaging) · WEEK 6
+# TODO: confirm `pip install .` works in a clean venv, then bump version to 0.1.0 for showcase.
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mcpscan"
+version = "0.0.1"
+description = "Security scanner and labeled benchmark for MCP servers (GDSC ML-1)"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp[cli]>=2,<3",
+    "pydantic>=2",
+    "typer",
+    "rich",
+    "pyyaml",
+    "rapidfuzz",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio", "ruff"]
+llm = ["google-genai"]
+
+[project.scripts]
+mcpscan = "mcpscan.cli:app"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mcpscan"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"src/mcpscan/rules/scope/purposes.yaml" = "mcpscan/rules/scope/purposes.yaml"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W"]

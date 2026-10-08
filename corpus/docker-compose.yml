@@ -1,0 +1,39 @@
+# OWNER: Ankitha · WEEK 2–4
+# `docker compose -f corpus/docker-compose.yml up --build` runs every corpus server in isolation.
+# network_mode: none — corpus servers never need the network (required for the dynamic harness).
+# stdin_open keeps stdio servers alive. TODO: add a service per new server folder.
+
+x-corpus-server: &corpus-server
+  build: .
+  network_mode: none
+  stdin_open: true
+  read_only: true
+
+services:
+  hello:
+    <<: *corpus-server
+    command: ["python", "servers/00_hello/server.py"]
+  hidden_instructions:
+    <<: *corpus-server
+    command: ["python", "servers/01_hidden_instructions/server.py"]
+  over_scoped:
+    <<: *corpus-server
+    command: ["python", "servers/02_over_scoped/server.py"]
+  tool_shadowing:
+    <<: *corpus-server
+    command: ["python", "servers/03_tool_shadowing/server.py"]
+  typosquat:
+    <<: *corpus-server
+    command: ["python", "servers/04_typosquat/server.py"]
+  hidden_text:
+    <<: *corpus-server
+    command: ["python", "servers/05_hidden_text/server.py"]
+  credential_harvest:
+    <<: *corpus-server
+    command: ["python", "servers/06_credential_harvest/server.py"]
+  hard_negative_files:
+    <<: *corpus-server
+    command: ["python", "servers/07_hard_negative_files/server.py"]
+  hard_negative_workflow:
+    <<: *corpus-server
+    command: ["python", "servers/08_hard_negative_workflow/server.py"]

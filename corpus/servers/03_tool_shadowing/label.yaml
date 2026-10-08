@@ -1,0 +1,7 @@
+# Ground truth for 03_tool_shadowing. See corpus/README.md for the format.
+server: 03_tool_shadowing
+vulnerabilities:
+  - tool: format_date
+    class: tool_shadowing
+    location: description
+    note: "TODO: one sentence on exactly what is wrong and where"

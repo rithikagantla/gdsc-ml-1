@@ -1,0 +1,3 @@
+# Hard negative: any finding here is a false positive.
+server: 08_hard_negative_workflow
+vulnerabilities: []

@@ -1,0 +1,33 @@
+# PENDING: move to .github/workflows/ci.yml (pushing workflow files needs a token with `workflow` scope).
+# OWNER: Daniel · WEEK 6
+# Every PR: lint + unit tests. TODO(week 6): add the benchmark job that fails if precision or
+# recall drops below results/baseline.json (Arnav provides the compare script).
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: pytest -q
+
+  # benchmark:
+  #   needs: test
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-python@v5
+  #       with: { python-version: "3.12" }
+  #     - run: pip install -e .
+  #     - run: mcpscan bench corpus/ --out results/
+  #     - run: python -m mcpscan.bench.compare results/results.json results/baseline.json

@@ -1,0 +1,7 @@
+# Ground truth for 02_over_scoped. See corpus/README.md for the format.
+server: 02_over_scoped
+vulnerabilities:
+  - tool: get_forecast
+    class: over_permission
+    location: schema
+    note: "TODO: one sentence on exactly what is wrong and where"

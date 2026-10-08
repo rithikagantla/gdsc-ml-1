@@ -1,0 +1,39 @@
+# OWNER: Daniel · WEEK 6
+# Reusable composite GitHub Action: anyone adds MCP scanning to their repo in ~5 lines:
+#
+#   - uses: rithikagantla/gdsc-ml-1@v1
+#     with:
+#       target-file: mcp-tools.json
+#
+# TODO: test from a separate repo; tag v1 before the showcase.
+name: "mcpscan"
+description: "Scan MCP server tool definitions for poisoning, shadowing and over-permission."
+inputs:
+  target-file:
+    description: "Path to a saved tools/list JSON file"
+    required: false
+  command:
+    description: "Stdio command that starts the server (alternative to target-file)"
+    required: false
+  fail-on:
+    description: "Fail the job if any finding is at or above this severity"
+    default: "high"
+runs:
+  using: "composite"
+  steps:
+    - uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+    - shell: bash
+      run: pip install "${{ github.action_path }}"
+    - shell: bash
+      run: |
+        if [ -n "${{ inputs.target-file }}" ]; then
+          mcpscan scan --file "${{ inputs.target-file }}" --format sarif -o mcpscan.sarif --fail-on "${{ inputs.fail-on }}"
+        else
+          mcpscan scan --format sarif -o mcpscan.sarif --fail-on "${{ inputs.fail-on }}" -- ${{ inputs.command }}
+        fi
+    - if: always()
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: mcpscan.sarif

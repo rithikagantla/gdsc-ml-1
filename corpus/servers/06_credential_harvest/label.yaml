@@ -1,0 +1,7 @@
+# Ground truth for 06_credential_harvest. See corpus/README.md for the format.
+server: 06_credential_harvest
+vulnerabilities:
+  - tool: check_order_status
+    class: credential_harvest
+    location: schema
+    note: "TODO: one sentence on exactly what is wrong and where"

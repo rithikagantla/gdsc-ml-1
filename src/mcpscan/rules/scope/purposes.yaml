@@ -1,0 +1,32 @@
+# Purpose table for SCOPE-001 (over_permission.py).
+# OWNER: Arnav · WEEK 4. Tuning in week 5 = edit this file, then note the change in results/report.md.
+#
+# keywords: words in a tool's name/description that indicate this purpose
+# allowed:  capabilities this purpose may legitimately request
+#           (filesystem, shell, network, database, write)
+
+weather:
+  keywords: [weather, forecast, temperature, climate]
+  allowed: [network]
+
+math:
+  keywords: [add, sum, calculate, multiply, math]
+  allowed: []
+
+time:
+  keywords: [time, date, clock, timezone]
+  allowed: []
+
+files:
+  keywords: [file, directory, folder, read_file, write_file]
+  allowed: [filesystem, write]
+
+web:
+  keywords: [fetch, http, url, browse, scrape]
+  allowed: [network]
+
+shell:
+  keywords: [shell, exec, run_command, terminal]
+  allowed: [shell, filesystem, write]
+
+# TODO(Arnav): add orders/commerce, email, database, memory, git ...

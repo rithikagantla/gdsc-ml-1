@@ -1,0 +1,7 @@
+# Ground truth for 04_typosquat. See corpus/README.md for the format.
+server: 04_typosquat
+vulnerabilities:
+  - tool: read_flie
+    class: name_collision
+    location: name
+    note: "TODO: one sentence on exactly what is wrong and where"

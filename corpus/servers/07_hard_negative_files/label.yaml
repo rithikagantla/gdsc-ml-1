@@ -1,0 +1,3 @@
+# Hard negative: any finding here is a false positive.
+server: 07_hard_negative_files
+vulnerabilities: []

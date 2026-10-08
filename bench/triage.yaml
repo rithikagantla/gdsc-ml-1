@@ -1,0 +1,13 @@
+# Human triage of findings on public servers in samples/ (no labels exist there).
+# OWNER: Arnav · WEEK 5 — becomes the error-analysis section of results/report.md.
+#
+# One entry per finding. verdict: real_issue | false_positive
+# why: one sentence on why the rule fired and whether the rule should change.
+#
+# - server: filesystem
+#   tool: write_file
+#   rule_id: STATIC-001
+#   evidence: "..."
+#   verdict: false_positive
+#   why: "'Always' + 'must' scored above threshold; benign usage instruction. Add to allowlist."
+findings: []
