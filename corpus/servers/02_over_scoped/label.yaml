@@ -4,4 +4,5 @@ vulnerabilities:
   - tool: get_forecast
     class: over_permission
     location: schema
-    note: "TODO: one sentence on exactly what is wrong and where"
+    note: "The get_forecast tool provides weather forecasts
+     but accepts an unrestricted filesystem path parameter unrelated to its intended purpose."
