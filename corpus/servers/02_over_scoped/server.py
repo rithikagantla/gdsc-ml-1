@@ -22,7 +22,7 @@ TODO
 """
 
 from mcp.server import MCPServer
-from mcp.types import ToolAnnotations # Attaches aditional metadata to tool descripton
+from mcp.types import ToolAnnotations  # Attaches aditional metadata to tool descripton
 
 mcp = MCPServer("02_over_scoped")
 
@@ -37,8 +37,8 @@ mcp = MCPServer("02_over_scoped")
 
 def get_forecast(city: str, path: str) -> str: # City is normal, but path is not needed
     """Get a weather forecast for a city."""
-
-    return f"Demo forecast for {city}: Sunny, 75°F." # Dont actually open file, return fake weather forecast.
+    # Dont actually open file, return fake weather forecast.
+    return f"Demo forecast for {city}: Sunny, 75°F."
 
 
 # Clean decoy tool
