@@ -36,5 +36,34 @@ def label_keys(labels: list[ServerLabel]) -> set[Key]:
     return {(lab.server, v.tool, v.vuln_class) for lab in labels for v in lab.vulnerabilities}
 
 
+
 def match(findings: list[Finding], labels: list[ServerLabel]) -> MatchResult:
-    raise NotImplementedError("Arnav: week 4 — see module docstring")
+    # Get all known vulnerabilities from ground-truth labels.
+    expected = label_keys(labels)
+
+    # Track unique vulnerabilities reported by the scanner.
+    found: set[Key] = set()
+
+    # Keep original false-positive findings for the report.
+    fp_findings: list[Finding] = []
+
+    for finding in findings:
+        key = finding.key
+
+        # Ignore repeated findings with the same key.
+        if key in found:
+            continue
+
+        found.add(key)
+
+        # Save findings that are not in the ground truth.
+        if key not in expected:
+            fp_findings.append(finding)
+
+    return MatchResult(
+        tp=found & expected,
+        fp=found - expected,
+        fn=expected - found,
+        fp_findings=fp_findings,
+    )
+

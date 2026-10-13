@@ -28,5 +28,24 @@ web:
 shell:
   keywords: [shell, exec, run_command, terminal]
   allowed: [shell, filesystem, write]
+  
+orders:
+  keywords: [order, orders, purchase, checkout, commerce, shopping]
+  allowed: [network, database, write]
 
-# TODO(Arnav): add orders/commerce, email, database, memory, git ...
+email:
+  keywords: [email, mail, inbox, send_email, message]
+  allowed: [network, write]
+
+database:
+  keywords: [database, sql, query, table, records]
+  allowed: [database, write]
+
+memory:
+  keywords: [memory, remember, recall, save_memory, memories]
+  allowed: [database, write]
+
+git:
+  keywords: [git, repository, commit, branch, pull_request]
+  allowed: [filesystem, write, network, shell]
+
