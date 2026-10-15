@@ -4,4 +4,9 @@ vulnerabilities:
   - tool: read_flie
     class: name_collision
     location: name
-    note: "TODO: one sentence on exactly what is wrong and where"
+    note: "read_flie is a one-letter typosquat of the official filesystem server's read_file (edit distance 2)."
+
+  - tool: list_directroy
+    class: name_collision
+    location: name
+    note: "list_directroy typosquats the official filesystem server's list_directory (edit distance 2)."
