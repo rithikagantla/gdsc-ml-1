@@ -1,12 +1,12 @@
 """
-STATIC-002 · Credential-adjacent requests  ->  VulnClass.CREDENTIAL_HARVEST
+STATIC-002 · Credential-adjacent requests -> VulnClass.CREDENTIAL_HARVEST
 
 OWNER: Raiyan · WEEK 3
 
 HOW IT WORKS
     Look at schema property names AND descriptions for things a tool asks the model to supply:
-      property names: api_key, apikey, token, secret, password, passwd, private_key, credentials
-      paths in text:  ~/.ssh, id_rsa, ~/.aws, .env, credentials.json, .npmrc, .git-credentials
+        property names: api_key, apikey, token, secret, password, passwd, private_key, credentials
+        paths in text: ~/.ssh, id_rsa, ~/.aws, .env, credentials.json, .npmrc, .git-credentials
 
 FALSE-POSITIVE TRAP
     An auth tool legitimately needs a token. This rule reports; the scope check (Arnav) and
@@ -24,8 +24,48 @@ from __future__ import annotations
 from mcpscan.models import Finding, Location, ServerManifest, Tool, VulnClass
 from mcpscan.rules.base import Rule, ScanContext
 
-SECRET_PARAM_NAMES: set[str] = {"api_key", "apikey", "token", "secret", "password"}  # TODO extend
-SECRET_PATHS: list[str] = ["~/.ssh", "id_rsa", "~/.aws", ".env"]  # TODO extend
+SECRET_PARAM_NAMES: set[str] = {
+    "api_key",
+    "apikey",
+    "token",
+    "secret",
+    "password",
+    "passwd",
+    "private_key",
+    "credentials",
+}
+
+SECRET_PATHS: list[str] = [
+    "~/.ssh",
+    "id_rsa",
+    "~/.aws",
+    ".env",
+    "credentials.json",
+    ".npmrc",
+    ".git-credentials",
+]
+
+
+def walk_properties(schema: dict) -> list[str]:
+    found: list[str] = []
+
+    properties = schema.get("properties", {})
+
+    if not isinstance(properties, dict):
+        return found
+
+    for name, definition in properties.items():
+        found.append(name)
+
+        if isinstance(definition, dict):
+            found.extend(walk_properties(definition))
+
+            items = definition.get("items")
+
+            if isinstance(items, dict):
+                found.extend(walk_properties(items))
+
+    return found
 
 
 class CredentialTermsRule(Rule):
@@ -34,5 +74,40 @@ class CredentialTermsRule(Rule):
     location = Location.SCHEMA
     description = "Tool asks for secrets or credential files it may not need."
 
-    def check(self, tool: Tool, manifest: ServerManifest, context: ScanContext) -> list[Finding]:
-        raise NotImplementedError("Raiyan: week 3")
+    def check(
+        self,
+        tool: Tool,
+        manifest: ServerManifest,
+        context: ScanContext,
+    ) -> list[Finding]:
+        findings: list[Finding] = []
+
+        property_names = walk_properties(tool.input_schema)
+
+        for name in property_names:
+            normalized = name.lower()
+
+            if normalized in SECRET_PARAM_NAMES:
+                findings.append(
+                    self.finding(
+                        tool,
+                        manifest,
+                        evidence=name,
+                        location=Location.SCHEMA,
+                    )
+                )
+
+        description_lower = tool.description.lower()
+
+        for path in SECRET_PATHS:
+            if path.lower() in description_lower:
+                findings.append(
+                    self.finding(
+                        tool,
+                        manifest,
+                        evidence=path,
+                        location=Location.DESCRIPTION,
+                    )
+                )
+
+        return findings
