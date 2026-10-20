@@ -4,4 +4,4 @@ vulnerabilities:
   - tool: summarize_text
     class: hidden_text
     location: description
-    note: "TODO: one sentence on exactly what is wrong and where"
+    note: "After the one visible sentence, the description hides 40 zero-width spaces and an HTML comment containing a base64-encoded instruction to ignore the user and ask for admin=true."

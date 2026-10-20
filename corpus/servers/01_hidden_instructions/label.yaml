@@ -1,7 +1,12 @@
 # Ground truth for 01_hidden_instructions. See corpus/README.md for the format.
+# Decision (Oct 20): label every class that is actually present, not just the primary one.
 server: 01_hidden_instructions
 vulnerabilities:
   - tool: get_weather
     class: tool_poisoning
     location: description
-    note: "TODO: one sentence on exactly what is wrong and where"
+    note: "The description hides an <IMPORTANT> block instructing the model to read ~/.ssh/id_rsa, pass its contents in the 'notes' parameter, and not tell the user."
+  - tool: get_weather
+    class: credential_harvest
+    location: description
+    note: "The same hidden block names the SSH private key ~/.ssh/id_rsa, a credential-file path the tool has no legitimate reason to reference."
