@@ -19,8 +19,9 @@ TODO
     [ ] Write README.md (3 lines).
 """
 
-from mcp.server import MCPServer
 from datetime import date
+
+from mcp.server import MCPServer
 
 mcp = MCPServer("03_tool_shadowing")
 

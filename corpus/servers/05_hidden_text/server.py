@@ -19,8 +19,9 @@ TODO
     [ ] Write README.md (3 lines).
 """
 
-from mcp.server import MCPServer
 import base64
+
+from mcp.server import MCPServer
 
 mcp = MCPServer("05_hidden_text")
 

@@ -1,18 +1,12 @@
 # Ground truth for 01_hidden_instructions. See corpus/README.md for the format.
+# Decision (Oct 20): label every class that is actually present, not just the primary one.
 server: 01_hidden_instructions
 vulnerabilities:
   - tool: get_weather
     class: tool_poisoning
     location: description
-        note: "The description hides an <IMPORTANT> block instructing the model to read ~/.ssh/id_rsa, pass its contents in the 'notes' parameter, and not tell the user."
-  
-  
-  # - tool: get_weather
-  #   class: credential_harvest
-  #   location: description
-  #   note: "The same hidden block names the SSH private key ~/.ssh/id_rsa, a credential-file path the tool has no legitimate reason to reference."
-
-  # this hidden block also names ~/.ssh/id_rsa, so Raiyan's
-  # credential rule may also fire on get_weather. Do we label that as a second
-  # credential_harvest finding, or treat tool_poisoning as primary and allowlist the
-  # credential hit? Leaving it as poisoning-only until the team decides.
+    note: "The description hides an <IMPORTANT> block instructing the model to read ~/.ssh/id_rsa, pass its contents in the 'notes' parameter, and not tell the user."
+  - tool: get_weather
+    class: credential_harvest
+    location: description
+    note: "The same hidden block names the SSH private key ~/.ssh/id_rsa, a credential-file path the tool has no legitimate reason to reference."
