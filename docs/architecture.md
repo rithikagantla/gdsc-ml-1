@@ -19,4 +19,4 @@ The benchmark matches them on `(server, tool, vuln_class)`.
 | Shipping | CLI, SARIF, CI, Action | 3–7 | Daniel |
 
 ## TODO (Rithika)
-- [ ] `docs/demo.md`: the 5-minute demo script every member can run alone.
+- [x] `docs/demo.md`: the 5-minute demo script every member can run alone (draft).
