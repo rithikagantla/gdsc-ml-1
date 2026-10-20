@@ -1,11 +1,11 @@
-# OWNER: Daniel · WEEK 6
 # Reusable composite GitHub Action: anyone adds MCP scanning to their repo in ~5 lines:
 #
 #   - uses: rithikagantla/gdsc-ml-1@v1
 #     with:
 #       target-file: mcp-tools.json
 #
-# TODO: test from a separate repo; tag v1 before the showcase.
+# Needs `permissions: security-events: write` in the calling workflow for the SARIF upload.
+# TODO(Daniel, week 6): test from a separate repo; tag v1 before the showcase.
 name: "mcpscan"
 description: "Scan MCP server tool definitions for poisoning, shadowing and over-permission."
 inputs:
@@ -16,8 +16,11 @@ inputs:
     description: "Stdio command that starts the server (alternative to target-file)"
     required: false
   fail-on:
-    description: "Fail the job if any finding is at or above this severity"
+    description: "Fail the job if any finding is at or above this severity (low|medium|high|critical)"
     default: "high"
+  upload-sarif:
+    description: "Upload results to GitHub code scanning"
+    default: "true"
 runs:
   using: "composite"
   steps:
@@ -25,15 +28,24 @@ runs:
       with:
         python-version: "3.12"
     - shell: bash
-      run: pip install "${{ github.action_path }}"
-    - shell: bash
+      run: pip install "$ACTION_PATH"
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+    - id: scan
+      shell: bash
+      env:
+        TARGET_FILE: ${{ inputs.target-file }}
+        SERVER_COMMAND: ${{ inputs.command }}
+        FAIL_ON: ${{ inputs.fail-on }}
       run: |
-        if [ -n "${{ inputs.target-file }}" ]; then
-          mcpscan scan --file "${{ inputs.target-file }}" --format sarif -o mcpscan.sarif --fail-on "${{ inputs.fail-on }}"
+        if [ -n "$TARGET_FILE" ]; then
+          mcpscan scan --file "$TARGET_FILE" --format sarif -o mcpscan.sarif --fail-on "$FAIL_ON"
         else
-          mcpscan scan --format sarif -o mcpscan.sarif --fail-on "${{ inputs.fail-on }}" -- ${{ inputs.command }}
+          read -r -a cmd <<< "$SERVER_COMMAND"
+          mcpscan scan --format sarif -o mcpscan.sarif --fail-on "$FAIL_ON" -- "${cmd[@]}"
         fi
-    - if: always()
+    - if: always() && inputs.upload-sarif == 'true' && hashFiles('mcpscan.sarif') != ''
       uses: github/codeql-action/upload-sarif@v3
       with:
         sarif_file: mcpscan.sarif
+        category: mcpscan
