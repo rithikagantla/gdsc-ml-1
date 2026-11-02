@@ -1,39 +1,13 @@
-"""
-Connector — start/connect to an MCP server and turn its tools into a ServerManifest.
-
-OWNER: Daniel · WEEK 2–3 · Builds on your week-1 scripts/list_tools.py
-
-GOAL
-    One async function the whole scanner uses to get tools from a server:
-        manifest = await load_manifest(target)
-    plus a file loader so rules/tests can run on saved JSON in samples/ without starting servers.
-
-STEPS
-    [ ] load_manifest(target):
-          - target is either a stdio command list (["python", "server.py"]) or an http(s) URL.
-          - stdio: mcp.StdioServerParameters + mcp.Client. URL: the SDK's streamable HTTP client.
-          - Page through tools/list until next_cursor is None (see list_tools.py).
-          - Apply a timeout (default 15s) — a hung server must not hang the scan.
-          - Convert each SDK tool -> models.Tool. Set description_sha256 = sha256(description).
-          - Keep the untouched response in ServerManifest.raw.
-    [ ] load_manifest_from_file(path):
-          - Accept both a bare list of tools and {"tools": [...]} (Inspector exports differ).
-          - Accept both `input_schema` (v2) and `inputSchema` (v1/raw JSON) keys.
-          - server name defaults to the file stem, minus ".tools".
-    [ ] Friendly errors: missing command, server crashed, timeout -> raise ConnectError with a
-        one-line message (the CLI prints it instead of a traceback).
-    [ ] tests/test_connect.py: file loader on a sample JSON; stdio against corpus/servers/00_hello.
-
-DONE WHEN
-    `mcpscan scan -- python corpus/servers/00_hello/server.py` lists 2 tools.
-
-RULE: public servers are list-only. This module never calls tools/call.
-"""
-
 from __future__ import annotations
 
+import asyncio
 import hashlib
+import json
+import tempfile
 from pathlib import Path
+
+from mcp import Client, StdioServerParameters
+from mcp.client.stdio import stdio_client
 
 from mcpscan.models import ServerManifest, Tool
 
@@ -41,11 +15,67 @@ DEFAULT_TIMEOUT_S = 15
 
 
 class ConnectError(RuntimeError):
-    """Raised with a human-readable message when we cannot reach a server."""
+    pass
 
 
 def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def _to_tool(raw_tool: dict) -> Tool:
+    if not isinstance(raw_tool, dict) or not isinstance(raw_tool.get("name"), str):
+        raise ConnectError("a tool entry is missing a string 'name'")
+    description = raw_tool.get("description") or ""
+    schema = raw_tool.get("input_schema") or raw_tool.get("inputSchema") or {}
+    return Tool(
+        name=raw_tool["name"],
+        description=description,
+        input_schema=schema,
+        annotations=raw_tool.get("annotations") or {},
+        description_sha256=sha256_text(description),
+    )
+
+
+def load_manifest_from_file(path: str | Path, server_name: str | None = None) -> ServerManifest:
+    path = Path(path)
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError:
+        raise ConnectError(f"file not found: {path}") from None
+    except json.JSONDecodeError:
+        raise ConnectError(f"{path} is not valid JSON") from None
+    tools = data.get("tools") if isinstance(data, dict) else data
+    if not isinstance(tools, list):
+        raise ConnectError(f"{path} must be a list of tools or an object with a 'tools' list")
+    name = server_name or path.name.removesuffix(".json").removesuffix(".tools")
+    return ServerManifest(
+        server=name,
+        tools=[_to_tool(t) for t in tools],
+        raw=data if isinstance(data, dict) else {"tools": data},
+    )
+
+
+async def _fetch(target) -> tuple[str | None, list[dict]]:
+    async with Client(target) as client:
+        tools = []
+        cursor = None
+        while True:
+            page = await client.list_tools(cursor=cursor)
+            tools += [t.model_dump(mode="json") for t in page.tools]
+            cursor = page.next_cursor
+            if cursor is None:
+                return getattr(client.server_info, "name", None), tools
+
+
+def _error_message(exc: BaseException, command: str | None, errlog) -> str:
+    while isinstance(exc, BaseExceptionGroup):
+        exc = exc.exceptions[0]
+    if isinstance(exc, FileNotFoundError) and command:
+        return f"could not start server, command not found: {command}"
+    errlog.seek(0)
+    lines = [line.strip() for line in errlog.read().splitlines() if line.strip()]
+    detail = lines[-1] if lines else str(exc) or type(exc).__name__
+    return f"could not start or talk to server: {detail}"
 
 
 async def load_manifest(
@@ -53,15 +83,27 @@ async def load_manifest(
     server_name: str | None = None,
     timeout: float = DEFAULT_TIMEOUT_S,
 ) -> ServerManifest:
-    """Connect over stdio (command list) or HTTP (URL string) and return the manifest."""
-    raise NotImplementedError("Daniel: week 3 — see module docstring")
+    if not target:
+        raise ConnectError("no server command given")
+    if isinstance(target, str) and not target.startswith(("http://", "https://")):
+        raise ConnectError(f"not an http(s) URL: {target}")
 
+    with tempfile.TemporaryFile("w+", errors="replace") as errlog:
+        client_target = target
+        command = None
+        if isinstance(target, list):
+            command = target[0]
+            params = StdioServerParameters(command=command, args=target[1:])
+            client_target = stdio_client(params, errlog=errlog)
+        try:
+            name, raw_tools = await asyncio.wait_for(_fetch(client_target), timeout)
+        except TimeoutError:
+            raise ConnectError(f"server did not respond within {timeout:g}s") from None
+        except Exception as exc:
+            raise ConnectError(_error_message(exc, command, errlog)) from None
 
-def load_manifest_from_file(path: str | Path, server_name: str | None = None) -> ServerManifest:
-    """Build a manifest from a saved tools/list JSON file (e.g. samples/filesystem.tools.json)."""
-    raise NotImplementedError("Daniel: week 3 — see module docstring")
-
-
-def _to_tool(raw_tool: dict) -> Tool:
-    """Normalize one raw tool dict (v1 or v2 key style) into models.Tool."""
-    raise NotImplementedError("Daniel: week 3")
+    return ServerManifest(
+        server=server_name or name or "server",
+        tools=[_to_tool(t) for t in raw_tools],
+        raw={"tools": raw_tools},
+    )
