@@ -1,7 +1,13 @@
-# Ground truth for 06_credential_harvest. See corpus/README.md for the format.
+# Ground truth for 06_credential_harvest.
 server: 06_credential_harvest
+
 vulnerabilities:
   - tool: check_order_status
     class: credential_harvest
     location: schema
-    note: "TODO: one sentence on exactly what is wrong and where"
+    note: "The order-status tool requests account_password and api_key even though neither is needed to check an order."
+
+  - tool: check_order_status
+    class: tool_poisoning
+    location: description
+    note: "The tool description instructs the model to request credentials and not tell the user."
