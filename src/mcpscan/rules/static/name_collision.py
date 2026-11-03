@@ -22,11 +22,21 @@ STEPS
 
 from __future__ import annotations
 
+from rapidfuzz.distance import Levenshtein
+
 from mcpscan.models import Finding, Location, ServerManifest, Tool, VulnClass
 from mcpscan.rules.base import Rule, ScanContext
 
 MAX_EDIT_DISTANCE = 2
-GENERIC_NAMES: set[str] = {"search", "read_file", "write_file", "list", "get", "fetch"}
+
+GENERIC_NAMES: set[str] = {
+    "search",
+    "read_file",
+    "write_file",
+    "list",
+    "get",
+    "fetch",
+}
 
 
 class NameCollisionRule(Rule):
@@ -35,5 +45,60 @@ class NameCollisionRule(Rule):
     location = Location.NAME
     description = "Tool or server name collides with or typosquats a known name."
 
-    def check(self, tool: Tool, manifest: ServerManifest, context: ScanContext) -> list[Finding]:
-        raise NotImplementedError("Raiyan: week 4")
+    def check(
+        self,
+        tool: Tool,
+        manifest: ServerManifest,
+        context: ScanContext,
+    ) -> list[Finding]:
+        findings: list[Finding] = []
+        current_name = tool.name.lower()
+
+        # 1. Exact collisions across DIFFERENT servers.
+        if current_name not in GENERIC_NAMES:
+            for other_manifest in context.all_manifests:
+                if other_manifest.server == manifest.server:
+                    continue
+
+                for other_tool in other_manifest.tools:
+                    other_name = other_tool.name.lower()
+
+                    if current_name == other_name:
+                        findings.append(
+                            self.finding(
+                                tool,
+                                manifest,
+                                evidence=(
+                                    f"{tool.name!r} also appears on server "
+                                    f"{other_manifest.server!r}"
+                                ),
+                            )
+                        )
+                        break
+
+        # 2. Near-misses against popular names collected from benign samples.
+        for popular_name in context.popular_names:
+            candidate = popular_name.lower()
+
+            if current_name == candidate:
+                continue
+
+            distance = Levenshtein.distance(
+                current_name,
+                candidate,
+                score_cutoff=MAX_EDIT_DISTANCE,
+            )
+
+            if 1 <= distance <= MAX_EDIT_DISTANCE:
+                findings.append(
+                    self.finding(
+                        tool,
+                        manifest,
+                        evidence=(
+                            f"{tool.name!r} resembles popular tool "
+                            f"{popular_name!r} (distance {distance})"
+                        ),
+                    )
+                )
+
+        return findings
