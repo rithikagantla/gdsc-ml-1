@@ -31,3 +31,28 @@ def test_finding_key_matches_label_key():
 
 def test_severity_ordering():
     assert Severity.CRITICAL.rank > Severity.HIGH.rank > Severity.MEDIUM.rank > Severity.LOW.rank
+
+
+def test_contract_values_are_locked():
+    """models.py is locked (v1). Changing these breaks every label.yaml and the benchmark."""
+    assert {c.value for c in VulnClass} == {
+        "tool_poisoning",
+        "tool_shadowing",
+        "name_collision",
+        "over_permission",
+        "hidden_text",
+        "credential_harvest",
+    }
+    assert {loc.value for loc in Location} == {"name", "description", "schema", "behavior"}
+    assert set(Finding.model_fields) == {
+        "rule_id", "server", "tool", "vuln_class", "location", "severity", "evidence",
+    }
+
+
+def test_label_accepts_class_alias():
+    label = ServerLabel.model_validate(
+        {"server": "s", "vulnerabilities": [
+            {"tool": "t", "class": "hidden_text", "location": "description"}
+        ]}
+    )
+    assert label.vulnerabilities[0].vuln_class is VulnClass.HIDDEN_TEXT

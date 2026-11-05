@@ -70,14 +70,19 @@ pip show mcp                       # version must start with 2
 pytest
 ```
 
-## Usage (target, weeks 4–6)
+## Usage
 
 ```bash
-mcpscan scan -- python corpus/servers/01_hidden_instructions/server.py
-mcpscan scan --url http://localhost:8000/mcp --format sarif --fail-on high
-mcpscan scan --file samples/filesystem.tools.json
-mcpscan bench corpus/
+mcpscan scan -- python corpus/servers/01_hidden_instructions/server.py    # stdio server
+mcpscan scan --url http://localhost:8000/mcp                               # running HTTP server
+mcpscan scan --file samples/filesystem.tools.json                          # saved tools/list JSON
+mcpscan scan --file x.tools.json --format sarif -o results/x.sarif --fail-on high
+mcpscan bench corpus/                                                      # precision / recall
 ```
+
+`--format` is `console` (default), `json` or `sarif`. `--fail-on low|medium|high|critical`
+exits 1 when any finding meets the threshold, which is how CI blocks a PR. See
+[`docs/demo.md`](docs/demo.md) for the five-minute demo.
 
 ## How we work
 

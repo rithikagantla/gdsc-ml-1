@@ -1,17 +1,22 @@
 """
 Data models — the contract every other file depends on.
 
-OWNER: Rithika (schema owner) · WEEK 1–3 · Changes need Rithika's review + a heads-up in #ml-1.
+OWNER: Rithika (schema owner) · LOCKED Oct 20, 2026 (v1)
+Changes need Rithika's review + a heads-up in #ml-1. tests/test_models.py pins the enum values,
+so a change here fails CI until the test is updated on purpose.
 
 WHAT THIS IS
     Everything downstream reads these models. Rules take a `Tool` + `ServerManifest` and return
     `Finding`s. Corpus `label.yaml` files parse into `ServerLabel`. The benchmark matches
     Findings to labels on the key (server, tool, vuln_class).
 
-TODO (Rithika)
-    [ ] Confirm the VulnClass list matches Arnav's top-6 in docs/threat-model.md.
-    [ ] Agree whether TOOL_SHADOWING and NAME_COLLISION stay separate classes.
-    [ ] Freeze this file by end of week 3 — after that, rules and labels depend on it.
+DECISIONS (v1)
+    [x] VulnClass matches Arnav's top 6 in docs/threat-model.md, one class per attack type.
+    [x] TOOL_SHADOWING and NAME_COLLISION stay separate: shadowing hides in a description and
+        targets another server's tool; collision is about the name itself. Different rules,
+        different false-positive traps, so they get separate precision/recall rows.
+    [x] Rug pull and output injection are not classes: they are dynamic (stretch) and report as
+        TOOL_POISONING with location BEHAVIOR.
 """
 
 from __future__ import annotations
