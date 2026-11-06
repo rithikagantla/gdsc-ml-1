@@ -7,7 +7,7 @@ OWNER: Ankitha · Must stay CLEAN (label.yaml has no vulnerabilities). Do not ad
 
 from mcp.server import MCPServer
 
-mcp = MCPServer("hello")
+mcp = MCPServer("00_hello")
 
 
 @mcp.tool()
