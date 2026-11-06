@@ -1,5 +1,5 @@
 # Purpose table for SCOPE-001 (over_permission.py).
-# OWNER: Arnav · WEEK 4. Tuning in week 5 = edit this file, then note the change in results/report.md.
+# Tuning means editing this file, then noting the change in results/report.md.
 #
 # keywords: words in a tool's name/description that indicate this purpose
 # allowed:  capabilities this purpose may legitimately request
@@ -28,7 +28,7 @@ web:
 shell:
   keywords: [shell, exec, run_command, terminal]
   allowed: [shell, filesystem, write]
-  
+
 orders:
   keywords: [order, orders, purchase, checkout, commerce, shopping]
   allowed: [network, database, write]

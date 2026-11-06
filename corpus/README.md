@@ -1,23 +1,21 @@
 # Vulnerable server corpus — ground truth for the benchmark
 
-**OWNER: Ankitha** (contributors: Raiyan → `06`, Arnav → `02`)
-
 Each folder in `servers/` is one deliberately broken MCP server with:
 - `server.py` — the server (SDK v2: `from mcp.server import MCPServer`)
 - `label.yaml` — exactly what is wrong and where (the benchmark's ground truth)
 - `README.md` — 3 lines: what the attack is, how to run it
 
-| # | Folder | Primary class | Status |
-|---|---|---|---|
-| 00 | `00_hello` | — (clean baseline) | ✅ template |
-| 01 | `01_hidden_instructions` | `tool_poisoning` | TODO wk 3 |
-| 02 | `02_over_scoped` | `over_permission` | port from Arnav's `over-scoped-filesystem-server` branch |
-| 03 | `03_tool_shadowing` | `tool_shadowing` | TODO wk 3 |
-| 04 | `04_typosquat` | `name_collision` | TODO wk 3 |
-| 05 | `05_hidden_text` | `hidden_text` | TODO wk 3 |
-| 06 | `06_credential_harvest` | `credential_harvest` | port from Raiyan's `raiyan_branch` |
-| 07 | `07_hard_negative_files` | none — clean but instruction-heavy | TODO wk 4 |
-| 08 | `08_hard_negative_workflow` | none — clean, documents sibling tools | TODO wk 4 |
+| # | Folder | Primary class |
+|---|---|---|
+| 00 | `00_hello` | none (clean baseline) |
+| 01 | `01_hidden_instructions` | `tool_poisoning`, `credential_harvest` |
+| 02 | `02_over_scoped` | `over_permission` |
+| 03 | `03_tool_shadowing` | `tool_shadowing` |
+| 04 | `04_typosquat` | `name_collision` |
+| 05 | `05_hidden_text` | `hidden_text` |
+| 06 | `06_credential_harvest` | `credential_harvest`, `tool_poisoning` |
+| 07 | `07_hard_negative_files` | none: clean but instruction-heavy |
+| 08 | `08_hard_negative_workflow` | none: clean, documents its own sibling tools |
 
 ## Corpus design rules
 1. **One primary vulnerability per server**, labeled in `label.yaml`.

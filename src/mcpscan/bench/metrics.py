@@ -1,8 +1,6 @@
 """
 Metrics — precision and recall, overall and per vulnerability class.
 
-OWNER: Arnav · WEEK 4
-
     precision = TP / (TP + FP)     "when it flags something, is it right?"  <- headline number
     recall    = TP / (TP + FN)     "does it catch what is there?"
 """

@@ -1,6 +1,6 @@
 # Threat model
 
-**OWNER: Arnav** · Decides which corpus servers we build and which `VulnClass` values exist in
+Decides which corpus servers we build and which `VulnClass` values exist in
 `src/mcpscan/models.py`. "Where it hides" must be one of: name, description, schema, behavior.
 
 | Attack type | How it works (1 sentence) | Where it hides | Static or dynamic? | Corpus server | Covered by existing benchmarks? | Priority |

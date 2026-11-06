@@ -1,6 +1,6 @@
 # Five-minute demo
 
-**OWNER: Rithika** · Every team member must be able to run this alone before Nov 12. Every command
+Every team member must be able to run this alone before Nov 12. Every command
 here was run against `main`. Use a terminal at least 120 columns wide so the tables stay readable.
 
 ## Before you start (not part of the five minutes)

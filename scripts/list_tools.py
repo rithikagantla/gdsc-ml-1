@@ -1,15 +1,8 @@
 """
 List an MCP server's tools (week-1 task, becomes connect.py).
 
-OWNER: Daniel · WEEK 1 → merge into src/mcpscan/connect.py in week 3.
-
     python scripts/list_tools.py npx -y @modelcontextprotocol/server-everything
     python scripts/list_tools.py --json out.json python corpus/servers/00_hello/server.py
-
-TODO (Daniel)
-    [ ] Replace this starter with your week-1 version if yours differs.
-    [ ] Friendly error instead of a traceback when the command does not exist.
-    [ ] Optional: Rich table output (name, first line of description, param count).
 """
 
 import argparse

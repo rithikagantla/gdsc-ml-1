@@ -1,8 +1,6 @@
 """
 Severity scoring — turn raw findings into Low / Medium / High / Critical.
 
-OWNER: Arnav · WEEK 4
-
 GOAL
     Rules don't decide severity; this module does, looking at ALL findings on the same tool.
     Keep it simple and write the reasoning down so it is defensible in the report.

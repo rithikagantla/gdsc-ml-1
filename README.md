@@ -8,8 +8,11 @@ only 6 real). Our headline deliverable is not the scanner — it is a **number**
 recall of our scanner against ground truth we built ourselves, with an honest breakdown of every
 false positive.
 
-> **Team members:** start with [`TASKS.md`](TASKS.md) to see your role and this week's tasks.
-> Every source file begins with a header describing exactly what to build.
+**Result:** precision 0.82 and recall 1.00 on 9 labeled vulnerabilities in 9 test servers. Read the
+[full report](results/report.md), including what those numbers do not show.
+
+**Website:** <https://rithikagantla.github.io/gdsc-ml-1/> explains the project and replays recorded
+scans step by step.
 
 ## Architecture
 
@@ -20,8 +23,7 @@ flowchart LR
   M --> E[Rule engine]
   E --> R1[Static rules]
   E --> R2[Scope rules]
-  E --> R3[Dynamic probes<br/>stretch]
-  R1 & R2 & R3 --> F[Findings<br/>+ severity]
+  R1 & R2 --> F[Findings<br/>+ severity]
   F --> O[Console / SARIF]
   F --> B[Benchmark runner]
   L[label.yaml<br/>ground truth] --> B
@@ -45,8 +47,6 @@ src/mcpscan/
   rules/scope/      # over_permission + purposes.yaml            (Arnav)
   report/           # console (Rich) + SARIF 2.1.0               (Daniel)
   bench/            # runner, matcher, metrics                   (Arnav)
-  dynamic/          # sandboxed probes (stretch)                 (Rithika + pair)
-  llm/              # Gemini classifier (stretch)                (Rithika)
 corpus/servers/     # deliberately broken MCP servers + label.yaml (Ankitha)
 samples/            # raw tools/list JSON from public servers    (Raiyan)
 bench/triage.yaml   # human review of real-world findings        (Arnav)

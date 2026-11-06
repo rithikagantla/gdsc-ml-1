@@ -1,7 +1,5 @@
 """
 Rule registry. Adding a rule = one new file + one line in ALL_RULES.
-
-OWNER: Raiyan · Uncomment each rule as its file is implemented.
 """
 
 from mcpscan.rules.base import Rule, ScanContext

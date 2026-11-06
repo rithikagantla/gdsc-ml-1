@@ -1,8 +1,6 @@
 """
 STATIC-004 · Name collision / typosquatting  ->  VulnClass.NAME_COLLISION
 
-OWNER: Raiyan · WEEK 4
-
 HOW IT WORKS
     Compare tool and server names against:
       - every other server in this scan (context.all_manifests) -> exact cross-server collisions
@@ -13,11 +11,6 @@ FALSE-POSITIVE TRAP
       - exact collisions ACROSS servers (never within one server), or
       - near-misses (distance 1–2, not 0) of well-known names.
     Keep a GENERIC_NAMES set that is ignored for exact collisions.
-
-STEPS
-    [ ] Write build_popular_names(samples_dir) helper.
-    [ ] location = NAME. evidence = "<name> ~ <popular_name> (distance N)".
-    [ ] Test with corpus 04_typosquat.
 """
 
 from __future__ import annotations

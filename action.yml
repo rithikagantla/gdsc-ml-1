@@ -5,7 +5,6 @@
 #       target-file: mcp-tools.json
 #
 # Needs `permissions: security-events: write` in the calling workflow for the SARIF upload.
-# TODO(Daniel, week 6): test from a separate repo; tag v1 before the showcase.
 name: "mcpscan"
 description: "Scan MCP server tool definitions for poisoning, shadowing and over-permission."
 inputs:

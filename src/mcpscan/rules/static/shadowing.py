@@ -1,8 +1,6 @@
 """
 STATIC-005 · Tool shadowing -> VulnClass.TOOL_SHADOWING
 
-OWNER: Raiyan · WEEK 4
-
 HOW IT WORKS
     A tool description gives instructions about another tool that this
     server does not own.
@@ -15,12 +13,6 @@ FALSE-POSITIVE TRAP
     Only flag a referenced tool when:
         - it belongs to another server
         - it appears near instruction-like language
-
-STEPS
-    - Extract snake_case / camelCase identifiers from the description.
-    - Ignore tools owned by the current server.
-    - Compare remaining identifiers against other manifests' tools and popular names.
-    - Require instruction-like wording near the referenced tool.
 """
 
 from __future__ import annotations

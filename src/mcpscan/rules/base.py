@@ -1,8 +1,6 @@
 """
 Rule interface — every rule implements this, so people can write rules in parallel.
 
-OWNER: Raiyan · WEEK 3
-
 HOW TO WRITE A RULE
     1. New file in rules/static/ or rules/scope/.
     2. Subclass Rule, set id / vuln_class / location / description.
@@ -10,9 +8,6 @@ HOW TO WRITE A RULE
     4. ALWAYS put the exact triggering text in `evidence` — week-5 FP analysis depends on it.
     5. Add one line to ALL_RULES in rules/__init__.py.
     6. Deterministic only: same input -> same output. No network, no randomness.
-
-TODO (Raiyan)
-    [ ] Review this interface with the team in week 3 before writing many rules.
 """
 
 from __future__ import annotations
