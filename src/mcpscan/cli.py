@@ -111,12 +111,12 @@ def bench(
     out: Path = typer.Option(Path("results"), help="Where to write report.md / results.json"),
 ) -> None:
     """Scan every corpus server and score the findings against the labels."""
-    if not (corpus / "servers").is_dir():
-        raise fail(f"no servers/ folder in {corpus}")
+    if not any((corpus / "servers").glob("*/label.yaml")):
+        raise fail(f"no corpus servers with a label.yaml in {corpus / 'servers'}")
     try:
         metrics = asyncio.run(run_benchmark(corpus, out))
-    except NotImplementedError:
-        raise fail("the benchmark runner is not implemented yet (bench/runner.py)") from None
+    except ConnectError as exc:
+        raise fail(str(exc)) from None
 
     console = Console()
     overall = (metrics or {}).get("overall", {})
@@ -125,6 +125,8 @@ def bench(
             f"[bold]precision[/bold] {overall.get('precision', 0):.2f}   "
             f"[bold]recall[/bold] {overall.get('recall', 0):.2f}"
         )
+    for name, row in (metrics or {}).get("per_class", {}).items():
+        console.print(f"  {name:20} precision {row['precision']:.2f}   recall {row['recall']:.2f}")
     console.print(f"Report written to {escape(str(out))}/")
 
 
