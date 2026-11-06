@@ -1,0 +1,696 @@
+<title>mcpscan Explorer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: an inspection console. Results first, then a server rail beside a replayable scan. */
+:root {
+  --bg: #f3f5f9; --surface: #ffffff; --surface-2: #eef1f6; --line: #dbe1ea;
+  --ink: #111a2b; --ink-2: #47536a; --ink-3: #66728a;
+  --accent: #1d5fbf; --accent-soft: #e4edfa;
+  --mark: #fff0c2; --mark-ink: #4d3800;
+  --term-bg: #101724; --term-ink: #d7dfeb; --term-dim: #8896ad; --term-hit: #ffc56b; --term-ok: #6fdd97; --term-bad: #ff9a9a;
+  --good: #137a2c; --good-soft: #e0f3e4;
+  --warn: #8a5a00; --warn-soft: #fdf0d2;
+  --serious: #a8481d; --serious-soft: #fce8df;
+  --critical: #b62c2c; --critical-soft: #fbe3e3;
+  --neutral-soft: #e9edf3;
+  --series-1: #2a78d6; --series-2: #eb6834;
+  --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e131c; --surface: #161d29; --surface-2: #1d2534; --line: #2c3648;
+    --ink: #edf1f7; --ink-2: #b4bfd0; --ink-3: #93a0b5;
+    --accent: #84aef5; --accent-soft: #1f2e49;
+    --mark: #5a4310; --mark-ink: #ffe9b0;
+    --term-bg: #0a0f18;
+    --good: #6fdd97; --good-soft: #15321f;
+    --warn: #f7c65f; --warn-soft: #3a2c0c;
+    --serious: #f2a17f; --serious-soft: #3d2216;
+    --critical: #ff9a9a; --critical-soft: #431c1f;
+    --neutral-soft: #242d3d;
+    --series-1: #3987e5; --series-2: #d95926;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e131c; --surface: #161d29; --surface-2: #1d2534; --line: #2c3648;
+  --ink: #edf1f7; --ink-2: #b4bfd0; --ink-3: #93a0b5;
+  --accent: #84aef5; --accent-soft: #1f2e49;
+  --mark: #5a4310; --mark-ink: #ffe9b0;
+  --term-bg: #0a0f18;
+  --good: #6fdd97; --good-soft: #15321f;
+  --warn: #f7c65f; --warn-soft: #3a2c0c;
+  --serious: #f2a17f; --serious-soft: #3d2216;
+  --critical: #ff9a9a; --critical-soft: #431c1f;
+  --neutral-soft: #242d3d;
+  --series-1: #3987e5; --series-2: #d95926;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font: 15px/1.55 var(--sans); }
+button { font: inherit; color: inherit; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+h1, h2, h3, p { margin: 0; }
+h2 { font-size: 19px; font-weight: 600; line-height: 1.3; }
+a { color: var(--accent); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-block: 0; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 720px) {
+  .wrap { padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); }
+}
+
+/* Top bar */
+.top { background: var(--surface); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding-block: 12px; }
+.brand { font-family: var(--mono); font-weight: 600; font-size: 16px; }
+.tag { color: var(--ink-3); font-size: 13px; }
+.top-meta { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--ink-3); }
+
+/* Result headline */
+.headline { padding-block: 32px 24px; display: grid; gap: 24px; }
+.headline h1 { font-size: clamp(25px, 3.6vw, 36px); line-height: 1.18; font-weight: 600; letter-spacing: -.012em; max-width: 25em; text-wrap: balance; }
+.headline .sub { color: var(--ink-2); max-width: 68ch; margin-top: 12px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
+.stat { padding: 14px 18px; min-width: 0; border-left: 1px solid var(--line); }
+.stat:first-child { border-left: 0; }
+.stat .k { font-size: 13px; color: var(--ink-2); }
+.stat .v { font: 600 30px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+.stat .n { font-size: 12.5px; color: var(--ink-3); }
+@media (max-width: 720px) {
+  .stat { border-left: 0; border-top: 1px solid var(--line); }
+  .stat:first-child { border-top: 0; }
+}
+
+/* Section shell */
+section { padding-block: 22px; }
+.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 24px; margin-bottom: 14px; }
+.sec-head p { color: var(--ink-2); max-width: 72ch; font-size: 14px; }
+
+/* Explorer */
+.explorer { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 980px) { .explorer { grid-template-columns: 300px minmax(0, 1fr); align-items: start; } }
+.rail { display: grid; gap: 2px; background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px; }
+.rail-group { font-size: 12px; letter-spacing: .05em; text-transform: uppercase; color: var(--ink-3); padding: 10px 10px 3px; }
+.rail button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; align-items: center; width: 100%; text-align: left; background: none; border: 0; padding: 8px 10px; border-radius: 6px; cursor: pointer; }
+.rail button:hover { background: var(--surface-2); }
+.rail button[aria-pressed="true"] { background: var(--accent-soft); }
+.rail .t { font-weight: 500; font-size: 14px; overflow-wrap: anywhere; }
+.rail .i { display: block; font: 11.5px var(--mono); color: var(--ink-3); overflow-wrap: anywhere; }
+.chip { display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; border-radius: 4px; font-size: 12px; font-weight: 600; white-space: nowrap; }
+.c-good { background: var(--good-soft); color: var(--good); }
+.c-warn { background: var(--warn-soft); color: var(--warn); }
+.c-serious { background: var(--serious-soft); color: var(--serious); }
+.c-critical { background: var(--critical-soft); color: var(--critical); }
+.c-neutral { background: var(--neutral-soft); color: var(--ink-2); }
+
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; min-width: 0; }
+.panel-head { display: flex; flex-wrap: wrap; gap: 12px 20px; justify-content: space-between; align-items: start; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.panel-head > div { min-width: 0; flex: 1 1 280px; }
+.panel-head h3 { font-size: 18px; font-weight: 600; }
+.panel-head p { color: var(--ink-2); font-size: 14px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; }
+.btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 13px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
+.btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
+
+/* Pipeline */
+.pipe { list-style: none; margin: 0; padding: 14px 18px; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; border-bottom: 1px solid var(--line); }
+.pipe li { position: relative; padding-top: 22px; font-size: 13px; min-width: 0; color: var(--ink-3); }
+.pipe li::before { content: ""; position: absolute; top: 7px; left: 0; right: 0; height: 2px; background: var(--line); }
+.pipe li:first-child::before { left: 7px; }
+.pipe li:last-child::before { right: calc(100% - 8px); }
+.pipe .dot { position: absolute; top: 0; left: 0; width: 16px; height: 16px; border-radius: 50%; background: var(--surface); border: 2px solid var(--line); }
+.pipe li.done { color: var(--ink); }
+.pipe li.done::before { background: var(--accent); }
+.pipe li.done .dot { background: var(--accent); border-color: var(--accent); }
+.pipe li.now { color: var(--ink); font-weight: 600; }
+.pipe li.now .dot { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent-soft); }
+.pipe b { display: block; font-weight: 600; }
+.pipe span { display: block; color: var(--ink-3); font-size: 12.5px; padding-right: 10px; font-weight: 400; }
+@media (max-width: 640px) { .pipe span { display: none; } .pipe b { font-size: 12px; padding-right: 6px; } }
+
+.stage { display: grid; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 1100px) { .stage { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); } }
+.tools { padding: 14px 18px 18px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.tool { border: 1px solid var(--line); border-radius: 6px; min-width: 0; transition: opacity .25s; }
+.tool.pending { opacity: .3; }
+.tool-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 8px 12px; background: var(--surface-2); border-radius: 6px 6px 0 0; }
+.tool-head .name { font: 600 14px var(--mono); overflow-wrap: anywhere; }
+.tool-head .sha { margin-left: auto; font: 12px var(--mono); color: var(--ink-3); }
+.desc { padding: 10px 12px; font: 13.5px/1.6 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; color: var(--ink-2); }
+.desc mark { background: var(--mark); color: var(--mark-ink); border-radius: 2px; padding: 1px 0; }
+.params { display: flex; flex-wrap: wrap; gap: 6px; padding: 0 12px 10px; align-items: center; font-size: 12.5px; color: var(--ink-3); }
+.param { font: 12.5px var(--mono); padding: 0 6px; border-radius: 4px; background: var(--neutral-soft); color: var(--ink-2); }
+.param.flag { background: var(--mark); color: var(--mark-ink); font-weight: 600; }
+.finding { border-top: 1px solid var(--line); padding: 10px 12px; display: grid; gap: 4px; transition: opacity .25s; }
+.finding.pending { opacity: 0; }
+.finding .row { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+.finding .cls { font-weight: 600; font-size: 14px; }
+.finding .rid { font: 12.5px var(--mono); color: var(--ink-3); }
+.finding .push { margin-left: auto; display: flex; gap: 6px; flex-wrap: wrap; }
+.finding .ev { font: 13px/1.5 var(--mono); color: var(--ink-2); overflow-wrap: anywhere; }
+.finding .why { font-size: 13.5px; color: var(--ink-2); }
+
+.log-wrap { background: var(--term-bg); color: var(--term-ink); min-width: 0; display: flex; flex-direction: column; border-radius: 0 0 8px 8px; }
+@media (min-width: 1100px) { .log-wrap { border-radius: 0 0 8px 0; } }
+.log-title { display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; padding: 10px 14px 0; color: var(--term-dim); font-size: 12.5px; }
+.log { margin: 0; padding: 10px 14px 16px; font: 12.5px/1.65 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; overflow-y: auto; min-height: 240px; max-height: 480px; flex: 1; }
+.log .d { color: var(--term-dim); }
+.log .h { color: var(--term-hit); }
+.log .o { color: var(--term-ok); }
+.log .b { color: var(--term-bad); }
+
+.tally { display: flex; flex-wrap: wrap; gap: 6px 22px; padding: 10px 18px; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--ink-2); }
+.tally b { font: 600 14px var(--mono); color: var(--ink); font-variant-numeric: tabular-nums; }
+.tally .note { margin-left: auto; color: var(--ink-3); font-size: 13px; }
+
+/* Lower grid */
+.two { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 980px) { .two { grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); } }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; min-width: 0; }
+.card h3 { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+.card .lede { color: var(--ink-2); font-size: 14px; margin-bottom: 10px; }
+.scroll { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th { text-align: left; font-weight: 500; color: var(--ink-3); font-size: 12.5px; border-bottom: 1px solid var(--line); padding: 6px 10px 6px 0; white-space: nowrap; }
+td { border-bottom: 1px solid var(--line); padding: 8px 10px 8px 0; vertical-align: middle; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { font-family: var(--mono); font-variant-numeric: tabular-nums; text-align: right; }
+.meter { display: grid; grid-template-columns: 74px 38px; gap: 8px; align-items: center; font: 13px var(--mono); }
+.meter .track { height: 6px; background: var(--neutral-soft); border-radius: 3px; overflow: hidden; }
+.meter .fill { height: 100%; background: var(--series-1); border-radius: 3px; }
+.legend { display: flex; gap: 16px; font-size: 13px; color: var(--ink-2); margin-bottom: 6px; }
+.legend i { display: inline-block; width: 12px; height: 3px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
+.chart { position: relative; }
+.chart svg { display: block; width: 100%; height: auto; }
+.chart text { font-family: var(--sans); fill: var(--ink-2); font-size: 12.5px; }
+.chart .val { font-family: var(--mono); fill: var(--ink); font-weight: 600; }
+.tip { position: absolute; pointer-events: none; background: var(--ink); color: var(--surface); font: 12.5px/1.45 var(--mono); padding: 6px 9px; border-radius: 5px; white-space: nowrap; transform: translate(-50%, calc(-100% - 10px)); z-index: 2; }
+ul.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+ul.plain b { font-weight: 600; }
+.limits li { font-size: 14px; color: var(--ink-2); }
+.limits b { color: var(--ink); }
+footer { border-top: 1px solid var(--line); margin-top: 18px; color: var(--ink-3); font-size: 13px; }
+footer .wrap { padding-block: 16px 24px; display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: space-between; }
+@media (prefers-reduced-motion: reduce) { .tool, .finding { transition: none; } }
+</style>
+
+<header class="top">
+  <div class="wrap">
+    <span class="brand">mcpscan</span>
+    <span class="tag">Security scanner and benchmark for MCP servers · GDSC ML-1</span>
+    <span class="top-meta"><span id="run-meta"></span><a href="https://github.com/rithikagantla/gdsc-ml-1">GitHub repo</a></span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap headline">
+    <div>
+      <h1 id="lead"></h1>
+      <p class="sub">AI assistants treat a tool's description as instructions, and nothing sanitizes it. mcpscan reads those descriptions and schemas, flags what looks wrong, and is scored against a test set where we know the right answers.</p>
+    </div>
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <section id="replay">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <h2>Watch a scan</h2>
+          <p>Pick a test server to replay how mcpscan handled it. This page replays a recorded run of the real scanner, so it does no scanning itself.</p>
+        </div>
+      </div>
+      <div class="explorer">
+        <nav class="rail" id="rail" aria-label="Test servers"></nav>
+        <div class="panel">
+          <div class="panel-head">
+            <div><h3 id="s-title"></h3><p id="s-summary"></p></div>
+            <div class="controls" style="flex:0 0 auto">
+              <button class="btn" id="btn-replay" type="button">Replay this scan</button>
+              <button class="btn primary" id="btn-all" type="button">Play all servers</button>
+            </div>
+          </div>
+          <ol class="pipe" id="pipe"></ol>
+          <div class="stage">
+            <div class="tools" id="tools"></div>
+            <div class="log-wrap">
+              <div class="log-title"><span id="log-cmd">Scanner log</span><span id="log-state"></span></div>
+              <pre class="log" id="log" tabindex="0" aria-label="Scanner log"></pre>
+            </div>
+          </div>
+          <div class="tally" id="tally" aria-live="off"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="results">
+    <div class="wrap two">
+      <div class="card">
+        <h3>Results by attack type</h3>
+        <p class="lede" id="class-lede"></p>
+        <div class="scroll"><table id="class-table"></table></div>
+      </div>
+      <div class="card">
+        <h3>How the number moved</h3>
+        <p class="lede">Each change is listed so the tuning can be checked. The first version caught just over half.</p>
+        <div class="legend" id="legend"></div>
+        <div class="chart" id="chart"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="limits">
+    <div class="wrap two">
+      <div class="card">
+        <h3>What these numbers do not show</h3>
+        <p class="lede">The score measures our own test set. It does not measure MCP servers in general.</p>
+        <ul class="plain limits" id="limit-list"></ul>
+      </div>
+      <div class="card">
+        <h3>Real public servers</h3>
+        <p class="lede" id="public-lede"></p>
+        <div class="scroll"><table id="public-table"></table></div>
+        <p class="lede" style="margin:12px 0 0">We only list tools on public servers and never call them. Attack testing stays on servers we wrote.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>To refresh this page: <code>mcpscan bench corpus/</code> then <code>python scripts/build_web.py</code></span>
+    <span id="foot"></span>
+  </div>
+</footer>
+
+<script>
+const DATA = /*__DATA__*/null;
+const CLASS_NAMES = {
+  tool_poisoning: "Tool poisoning", tool_shadowing: "Tool shadowing", name_collision: "Name collision",
+  over_permission: "Over-permission", hidden_text: "Hidden text", credential_harvest: "Credential harvesting",
+};
+const SEVERITY = {
+  critical: ["c-critical", "Critical"], high: ["c-serious", "High"],
+  medium: ["c-warn", "Medium"], low: ["c-neutral", "Low"],
+};
+const STAGES = [
+  ["Connect", "Start the server over stdio"],
+  ["List tools", "Read every name and description"],
+  ["Run rules", "Every rule checks each tool"],
+  ["Score severity", "Weigh all findings on a tool"],
+  ["Compare labels", "Right, wrong, or missed?"],
+];
+const fmt = (n) => n.toFixed(2);
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (id) => document.getElementById(id);
+
+function el(tag, cls, text) {
+  const node = document.createElement(tag);
+  if (cls) node.className = cls;
+  if (text !== undefined) node.textContent = text;
+  return node;
+}
+
+function chip(cls, text) { return el("span", "chip " + cls, text); }
+
+function serverChip(s) {
+  if (s.fp) return chip("c-warn", "! " + s.fp + " false alarm" + (s.fp > 1 ? "s" : ""));
+  if (s.tp) return chip("c-good", "✓ " + s.tp + " caught");
+  return chip("c-neutral", "Clean");
+}
+
+/* Header and summary */
+function renderTop() {
+  const o = DATA.overall, c = DATA.corpus;
+  const flags = o.tp + o.fp;
+  $("lead").textContent = "mcpscan found all " + (o.tp + o.fn) + " planted vulnerabilities, and " + o.tp + " of its " + flags + " alerts were correct.";
+  $("run-meta").textContent = "Run " + DATA.date + " · commit " + DATA.commit;
+  const stats = [
+    ["Precision", fmt(o.precision), o.tp + " of " + flags + " alerts correct"],
+    ["Recall", fmt(o.recall), o.tp + " of " + (o.tp + o.fn) + " vulnerabilities found"],
+    ["False alarms", String(o.fp), o.fn + " vulnerabilities missed"],
+    ["Test servers", String(c.servers), c.tools + " tools, " + c.labels + " labeled vulnerabilities"],
+  ];
+  $("stats").replaceChildren(...stats.map(([k, v, n]) => {
+    const box = el("div", "stat");
+    box.append(el("div", "k", k), el("div", "v", v), el("div", "n", n));
+    return box;
+  }));
+  $("foot").textContent = DATA.rules.length + " rules · " + c.tools + " tools · commit " + DATA.commit;
+}
+
+/* Server rail */
+function renderRail() {
+  const groups = [["attack", "Planted attacks"], ["decoy", "Clean decoys"], ["clean", "Baseline"]];
+  const rail = $("rail");
+  for (const [kind, label] of groups) {
+    rail.append(el("div", "rail-group", label));
+    for (const s of DATA.servers.filter((x) => x.kind === kind)) {
+      const b = el("button");
+      b.type = "button";
+      b.dataset.id = s.id;
+      const left = el("span");
+      left.append(el("span", "t", s.title), el("span", "i", s.id));
+      b.append(left, serverChip(s));
+      b.addEventListener("click", () => { stop(); select(s.id); if (!reduced) replay(s); });
+      rail.append(b);
+    }
+  }
+}
+
+/* Pipeline */
+function renderPipe() {
+  $("pipe").replaceChildren(...STAGES.map(([name, hint]) => {
+    const li = el("li");
+    li.append(el("i", "dot"), el("b", "", name), el("span", "", hint));
+    return li;
+  }));
+}
+function setStage(n) {
+  [...$("pipe").children].forEach((li, i) => {
+    li.classList.toggle("done", i < n);
+    li.classList.toggle("now", i === n);
+    li.toggleAttribute("aria-current", i === n);
+  });
+}
+
+/* Tool cards */
+function descNode(tool) {
+  const box = el("div", "desc");
+  if (!tool.text) { box.textContent = "(no description)"; return box; }
+  let at = 0;
+  for (const [start, end] of tool.spans) {
+    if (start > at) box.append(tool.text.slice(at, start));
+    box.append(el("mark", "", tool.text.slice(start, end)));
+    at = end;
+  }
+  box.append(tool.text.slice(at));
+  return box;
+}
+
+function findingNode(f) {
+  const row = el("div", "finding");
+  row.dataset.tool = f.tool;
+  const head = el("div", "row");
+  head.append(el("span", "cls", CLASS_NAMES[f.class]), el("span", "rid", f.rule));
+  const push = el("span", "push");
+  const sev = SEVERITY[f.severity];
+  push.append(chip(sev[0], sev[1]));
+  push.append(f.outcome === "caught" ? chip("c-good", "✓ Caught") : chip("c-warn", "! False alarm"));
+  head.append(push);
+  row.append(head);
+  for (const line of f.evidence) row.append(el("div", "ev", line));
+  if (f.why) row.append(el("div", "why", "Why it fired: " + f.why));
+  return row;
+}
+
+function renderTools(s) {
+  $("tools").replaceChildren(...s.tools.map((t) => {
+    const card = el("article", "tool");
+    card.dataset.tool = t.name;
+    const head = el("div", "tool-head");
+    head.append(el("span", "name", t.name));
+    const hits = s.findings.filter((f) => f.tool === t.name).length;
+    if (!hits && !t.labeled.length) head.append(chip("c-neutral", "Clean"));
+    head.append(el("span", "sha", "sha256 " + t.sha));
+    card.append(head, descNode(t));
+    if (t.params.length) {
+      const p = el("div", "params");
+      p.append("Parameters");
+      for (const x of t.params) p.append(el("span", "param" + (x.flagged ? " flag" : ""), x.name));
+      card.append(p);
+    }
+    for (const f of s.findings.filter((x) => x.tool === t.name)) card.append(findingNode(f));
+    return card;
+  }));
+}
+
+/* Log lines: every line is built from the recorded results */
+function logScript(s) {
+  const lines = [];
+  const push = (stage, cls, text) => lines.push({ stage, cls, text });
+  const path = "corpus/servers/" + s.id + "/server.py";
+  push(0, "", "$ mcpscan scan -- python " + path);
+  push(0, "d", "started server, connected over stdio");
+  push(1, "", "tools/list returned " + s.tools.length + " tool" + (s.tools.length > 1 ? "s" : ""));
+  for (const t of s.tools) push(1, "d", "  " + t.name + "  sha256 " + t.sha);
+  push(2, "", "running " + DATA.rules.length + " rules on " + s.tools.length + " tools (" + DATA.rules.length * s.tools.length + " checks)");
+  if (!s.findings.length) push(2, "d", "  no rule fired");
+  for (const f of s.findings) push(2, "h", "  " + f.rule + "  " + f.tool + "  " + f.class);
+  if (s.findings.length) {
+    push(3, "", "scoring severity");
+    for (const f of s.findings) push(3, "d", "  " + f.tool + "  " + f.class + "  " + f.severity.toUpperCase());
+  }
+  push(4, "", "comparing with label.yaml (" + s.labels + " labeled)");
+  for (const f of s.findings) {
+    push(4, f.outcome === "caught" ? "o" : "b",
+      f.outcome === "caught" ? "  ✓ true positive   " + f.tool + "  " + f.class : "  ✗ false positive  " + f.tool + "  " + f.class);
+  }
+  push(4, "", "result: " + s.tp + " caught, " + s.fp + " false alarm" + (s.fp === 1 ? "" : "s") + ", " + s.fn + " missed");
+  return lines;
+}
+
+function writeLog(lines) {
+  const log = $("log");
+  log.replaceChildren(...lines.map((l) => el("div", l.cls, l.text)));
+  log.scrollTop = 0;
+}
+
+/* Selection and replay */
+let current = null, token = 0;
+
+function select(id) {
+  current = DATA.servers.find((s) => s.id === id);
+  for (const b of $("rail").querySelectorAll("button")) {
+    b.setAttribute("aria-pressed", String(b.dataset.id === id));
+  }
+  $("s-title").textContent = current.title;
+  $("s-summary").textContent = current.summary;
+  $("log-cmd").textContent = "Scanner log · " + current.id;
+  renderTools(current);
+  writeLog(logScript(current));
+  setStage(STAGES.length);
+  $("log-state").textContent = "Recorded run";
+}
+
+function stop() { token++; }
+
+function wait(ms, run) {
+  return new Promise((resolve) => setTimeout(() => resolve(run === token), reduced ? 0 : ms));
+}
+
+async function replay(s, speed = 1) {
+  const run = ++token;
+  await play(s, run, speed);
+}
+
+async function play(s, run, speed) {
+  const tools = [...$("tools").querySelectorAll(".tool")];
+  const finds = [...$("tools").querySelectorAll(".finding")];
+  tools.forEach((t) => t.classList.add("pending"));
+  finds.forEach((f) => f.classList.add("pending"));
+  const log = $("log");
+  log.replaceChildren();
+  $("log-state").textContent = "Replaying";
+  const script = logScript(s);
+  for (let stage = 0; stage < STAGES.length; stage++) {
+    setStage(stage);
+    if (stage === 1) tools.forEach((t) => t.classList.remove("pending"));
+    if (stage === 2) finds.forEach((f) => f.classList.remove("pending"));
+    for (const line of script.filter((l) => l.stage === stage)) {
+      log.append(el("div", line.cls, line.text));
+      log.scrollTop = log.scrollHeight;
+      if (!(await wait(110 / speed, run))) return false;
+    }
+    if (!(await wait(420 / speed, run))) return false;
+  }
+  setStage(STAGES.length);
+  $("log-state").textContent = "Recorded run";
+  return true;
+}
+
+/* Running tally */
+function renderTally(tp, fp, fn, done) {
+  const box = $("tally");
+  const flags = tp + fp, known = tp + fn;
+  const p = flags ? fmt(tp / flags) : "–", r = known ? fmt(tp / known) : "–";
+  const part = (label, value) => {
+    const s = el("span");
+    s.append(label + " ", el("b", "", String(value)));
+    return s;
+  };
+  box.replaceChildren(part("Caught", tp), part("False alarms", fp), part("Missed", fn), part("Precision", p), part("Recall", r),
+    el("span", "note", done === DATA.servers.length ? "All " + done + " servers scored" : done + " of " + DATA.servers.length + " servers scored"));
+}
+
+async function playAll() {
+  const run = ++token;
+  let tp = 0, fp = 0, fn = 0, done = 0;
+  renderTally(0, 0, 0, 0);
+  for (const s of DATA.servers) {
+    select(s.id);
+    if (!(await play(s, run, 2.2))) { renderFinalTally(); return; }
+    tp += s.tp; fp += s.fp; fn += s.fn; done++;
+    renderTally(tp, fp, fn, done);
+    if (!(await wait(450, run))) { renderFinalTally(); return; }
+  }
+}
+
+function renderFinalTally() {
+  const o = DATA.overall;
+  renderTally(o.tp, o.fp, o.fn, DATA.servers.length);
+}
+
+/* Results table */
+function meter(v) {
+  const box = el("div", "meter");
+  const track = el("div", "track"), fill = el("div", "fill");
+  fill.style.width = v * 100 + "%";
+  track.append(fill);
+  box.append(track, el("span", "", fmt(v)));
+  return box;
+}
+
+function renderClasses() {
+  const t = $("class-table");
+  const head = el("tr");
+  for (const [text, cls] of [["Attack type"], ["Caught", "num"], ["False alarms", "num"], ["Missed", "num"], ["Precision"], ["Recall"]]) {
+    const th = el("th", cls || "", text);
+    th.scope = "col";
+    head.append(th);
+  }
+  const rows = Object.entries(DATA.per_class).map(([name, r]) => {
+    const tr = el("tr");
+    const cells = [el("td", "", CLASS_NAMES[name]), el("td", "num", String(r.tp)), el("td", "num", String(r.fp)), el("td", "num", String(r.fn))];
+    const pc = el("td"), rc = el("td");
+    pc.append(meter(r.precision));
+    rc.append(meter(r.recall));
+    tr.append(...cells, pc, rc);
+    return tr;
+  });
+  t.replaceChildren(head, ...rows);
+  const worst = Object.entries(DATA.per_class).filter(([, r]) => r.fp).map(([n]) => CLASS_NAMES[n].toLowerCase());
+  const missed = Object.values(DATA.per_class).some((r) => r.fn);
+  $("class-lede").textContent = (missed ? "Some attack types were missed." : "Every attack type was found.") + (worst.length ? " False alarms came from " + worst.join(" and ") + "." : "");
+}
+
+/* Line chart */
+function renderChart() {
+  const series = [["Precision", "precision", "var(--series-1)"], ["Recall", "recall", "var(--series-2)"]];
+  $("legend").replaceChildren(...series.map(([name, , color]) => {
+    const s = el("span");
+    const key = el("i");
+    key.style.background = color;
+    s.append(key, name);
+    return s;
+  }));
+  const W = 560, H = 236, L = 34, R = 118, T = 16, B = 44;
+  const steps = DATA.steps;
+  const x = (i) => L + 12 + (i * (W - L - R - 24)) / (steps.length - 1);
+  const y = (v) => T + (1 - v) * (H - T - B);
+  const NS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(NS, "svg");
+  svg.setAttribute("viewBox", "0 0 " + W + " " + H);
+  svg.setAttribute("role", "img");
+  svg.setAttribute("aria-label", "Precision rose from " + fmt(steps[0].precision) + " to " + fmt(steps.at(-1).precision) + ", and recall from " + fmt(steps[0].recall) + " to " + fmt(steps.at(-1).recall) + ".");
+  const add = (tag, attrs, text) => {
+    const n = document.createElementNS(NS, tag);
+    for (const [k, v] of Object.entries(attrs)) n.setAttribute(k, v);
+    if (text !== undefined) n.textContent = text;
+    svg.append(n);
+    return n;
+  };
+  for (const v of [0, 0.5, 1]) {
+    add("line", { x1: L, x2: W - R + 6, y1: y(v), y2: y(v), stroke: "var(--line)", "stroke-width": 1 });
+    add("text", { x: L - 8, y: y(v) + 4, "text-anchor": "end" }, fmt(v));
+  }
+  steps.forEach((s, i) => {
+    const words = s.label.split(" ");
+    const mid = Math.ceil(words.length / 2);
+    add("text", { x: x(i), y: H - B + 19, "text-anchor": "middle" }, words.slice(0, mid).join(" "));
+    add("text", { x: x(i), y: H - B + 34, "text-anchor": "middle" }, words.slice(mid).join(" "));
+  });
+  for (const [name, key, color] of series) {
+    add("polyline", {
+      points: steps.map((s, i) => x(i) + "," + y(s[key])).join(" "),
+      fill: "none", stroke: color, "stroke-width": 2, "stroke-linejoin": "round", "stroke-linecap": "round",
+    });
+    const end = steps.at(-1)[key];
+    add("text", { class: "val", x: x(steps.length - 1) + 12, y: y(end) + 4 }, name + " " + fmt(end));
+  }
+  add("text", { class: "val", x: x(0), y: y(steps[0].precision) + 22, "text-anchor": "middle" }, fmt(steps[0].precision));
+  const tip = el("div", "tip");
+  tip.hidden = true;
+  const host = $("chart");
+  steps.forEach((s, i) => {
+    for (const [, key, color] of series) {
+      add("circle", { cx: x(i), cy: y(s[key]), r: 4.5, fill: color, stroke: "var(--surface)", "stroke-width": 2 });
+    }
+    const hit = add("rect", {
+      x: x(i) - 30, y: T - 8, width: 60, height: H - T - B + 16, fill: "transparent", tabindex: 0,
+      "aria-label": s.label + ": precision " + fmt(s.precision) + ", recall " + fmt(s.recall),
+    });
+    const show = () => {
+      tip.textContent = "P " + fmt(s.precision) + "  R " + fmt(s.recall) + "  " + s.tp + "/" + s.fp + "/" + s.fn;
+      tip.hidden = false;
+      tip.style.left = (Math.min(x(i), W - 90) / W) * 100 + "%";
+      tip.style.top = (y(Math.min(s.precision, s.recall)) / H) * 100 + "%";
+    };
+    hit.addEventListener("mouseenter", show);
+    hit.addEventListener("focus", show);
+    hit.addEventListener("mouseleave", () => { tip.hidden = true; });
+    hit.addEventListener("blur", () => { tip.hidden = true; });
+  });
+  host.replaceChildren(svg, tip);
+}
+
+/* Lower cards */
+function renderLimits() {
+  const c = DATA.combined, o = DATA.overall;
+  const items = [
+    ["The test set is small and ours.", " " + DATA.corpus.labels + " labels written by the same team that wrote the rules. One wrong call moves precision by about 8 points."],
+    ["Rules were tuned on it.", " There is no held-out test set, so recall of 1.00 means we catch the attacks we thought of."],
+    ["The scoring method matters.", " Each server is scored separately. Scanned as one set, precision is " + fmt(c.precision) + " instead of " + fmt(o.precision) + "."],
+    ["There is no outside comparison yet.", " We make no claim to beat other scanners, and we did not run Snyk or mcp-guardbench."],
+    ["This is static analysis only.", " Rug pulls and malicious tool output need a dynamic harness, which is not built."],
+  ];
+  $("limit-list").replaceChildren(...items.map(([b, t]) => {
+    const li = el("li");
+    li.append(el("b", "", b), t);
+    return li;
+  }));
+}
+
+function renderPublic() {
+  const tools = DATA.public.reduce((a, p) => a + p.tools, 0);
+  const found = DATA.public.reduce((a, p) => a + p.findings, 0);
+  $("public-lede").textContent = found + " findings across " + tools + " tools. That is a good sign for false alarms, though all three come from one official reference project.";
+  const head = el("tr");
+  for (const [text, cls] of [["Server"], ["Tools", "num"], ["Findings", "num"]]) head.append(el("th", cls || "", text));
+  $("public-table").replaceChildren(head, ...DATA.public.map((p) => {
+    const tr = el("tr");
+    const name = el("td", "mono", p.name);
+    tr.append(name, el("td", "num", String(p.tools)), el("td", "num", String(p.findings)));
+    return tr;
+  }));
+}
+
+/* Boot */
+renderTop();
+renderRail();
+renderPipe();
+renderClasses();
+renderChart();
+renderLimits();
+renderPublic();
+renderFinalTally();
+select("01_hidden_instructions");
+$("btn-replay").addEventListener("click", () => replay(current));
+$("btn-all").addEventListener("click", playAll);
+</script>
