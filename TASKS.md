@@ -8,7 +8,7 @@ Sprint Sep 24 to **Nov 12 (Showcase)**. Lead and mentor: Rithika.
 | Labeled corpus: 9 servers, 23 tools, 9 labeled vulnerabilities | Done |
 | Six rules, severity scoring, benchmark | Done |
 | Results report with error analysis | Done: [`results/report.md`](results/report.md) |
-| Project website | Done: <https://rithikagantla.github.io/gdsc-ml-1/> |
+| Project website | Done: <https://rithikagantla.github.io/mcp-scanner/> |
 | CI: lint, tests, baseline check | Done: `tests/test_bench.py` fails if precision or recall drop |
 | Five-minute demo | Done: [`docs/demo.md`](docs/demo.md) |
 

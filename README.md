@@ -11,7 +11,7 @@ false positive.
 **Result:** precision 0.82 and recall 1.00 on 9 labeled vulnerabilities in 9 test servers. Read the
 [full report](results/report.md), including what those numbers do not show.
 
-**Website:** <https://rithikagantla.github.io/gdsc-ml-1/> explains the project and replays recorded
+**Website:** <https://rithikagantla.github.io/mcp-scanner/> explains the project and replays recorded
 scans step by step.
 
 ## Architecture
@@ -90,7 +90,7 @@ Add MCP scanning to a repo. Findings appear under Security > Code scanning, and 
 `fail-on` or above. The calling workflow needs `permissions: security-events: write`.
 
 ```yaml
-- uses: rithikagantla/gdsc-ml-1@v1
+- uses: rithikagantla/mcp-scanner@v1
   with:
     target-file: mcp-tools.json
 ```

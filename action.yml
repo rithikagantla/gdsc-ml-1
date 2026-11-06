@@ -1,6 +1,6 @@
 # Reusable composite GitHub Action: anyone adds MCP scanning to their repo in ~5 lines:
 #
-#   - uses: rithikagantla/gdsc-ml-1@v1
+#   - uses: rithikagantla/mcp-scanner@v1
 #     with:
 #       target-file: mcp-tools.json
 #
