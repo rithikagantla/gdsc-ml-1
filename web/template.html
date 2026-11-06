@@ -242,7 +242,7 @@ footer b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
       <a href="#results">Results</a>
       <a href="#start">Get started</a>
     </nav>
-    <a class="nav-cta" href="https://github.com/rithikagantla/gdsc-ml-1">GitHub</a>
+    <a class="nav-cta" href="https://github.com/rithikagantla/mcp-scanner">GitHub</a>
   </div>
 </header>
 
@@ -363,8 +363,8 @@ footer b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
       <div class="two start">
         <div class="card">
           <h3>Install</h3>
-          <pre class="code">git clone https://github.com/rithikagantla/gdsc-ml-1
-cd gdsc-ml-1
+          <pre class="code">git clone https://github.com/rithikagantla/mcp-scanner
+cd mcp-scanner
 python -m venv .venv
 source .venv/bin/activate
 pip install .</pre>
@@ -790,7 +790,7 @@ function renderLimits() {
     ["Rules were tuned on it.", " There is no held-out test set, so recall of 1.00 means we catch the attacks we thought of."],
     ["The scoring method matters.", " Each server is scored separately. Scanned as one set, precision is " + fmt(c.precision) + " instead of " + fmt(o.precision) + "."],
     ["There is no outside comparison yet.", " We make no claim to beat other scanners, and we did not run Snyk or mcp-guardbench."],
-    ["This is static analysis only.", " Rug pulls and malicious tool output need a dynamic harness, which is not built."],
+    ["This is static analysis only.", " Rug pulls and malicious tool output need dynamic analysis, which we did not build."],
   ];
   $("limit-list").replaceChildren(...items.map(([b, t]) => {
     const li = el("li");

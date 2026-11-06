@@ -1,8 +1,6 @@
 """
 SCOPE-001 · Over-permission  ->  VulnClass.OVER_PERMISSION
 
-OWNER: Arnav · WEEK 4 (v1) / WEEK 5 (tuning purposes.yaml)
-
 IDEA
     AWS IAM least privilege, in a new costume. A "weather" tool asking for a raw filesystem
     `path` is asking for more than its job needs.
@@ -20,13 +18,6 @@ TWO STEPS
 
 WHY YAML
     Tuning in week 5 becomes a data change, not a code change. Document every edit in the report.
-
-STEPS
-    [ ] load_purposes() reads purposes.yaml next to this file (importlib.resources).
-    [ ] classify_purpose(tool) -> str | None
-    [ ] requested_capabilities(tool) -> set[str]   (also reused by severity.py for "network")
-    [ ] evidence = "purpose=weather requests filesystem via param 'path'"
-    [ ] Test with corpus 02_over_scoped (Arnav's over_scoped_filesystem server).
 """
 
 from __future__ import annotations

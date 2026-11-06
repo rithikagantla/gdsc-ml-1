@@ -1,7 +1,5 @@
 # Architecture
 
-**OWNER: Rithika** · WEEK 7 — polish into the README diagram for the showcase.
-
 Pipeline: **connect → ServerManifest → rule engine → findings (+severity) → console / SARIF / benchmark**.
 
 ## The two contracts
@@ -17,6 +15,3 @@ The benchmark matches them on `(server, tool, vuln_class)`.
 | Detection | static rules, scope, severity | 3–4 | Raiyan, Arnav |
 | Measurement | corpus, matcher, metrics, triage | 2–5 | Ankitha, Arnav |
 | Shipping | CLI, SARIF, CI, Action | 3–7 | Daniel |
-
-## TODO (Rithika)
-- [x] `docs/demo.md`: the 5-minute demo script every member can run alone (draft).

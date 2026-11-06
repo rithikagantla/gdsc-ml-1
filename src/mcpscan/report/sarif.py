@@ -17,7 +17,7 @@ from mcpscan.rules.base import Rule
 
 SARIF_VERSION = "2.1.0"
 SARIF_SCHEMA = "https://json.schemastore.org/sarif-2.1.0.json"
-INFO_URI = "https://github.com/rithikagantla/gdsc-ml-1"
+INFO_URI = "https://github.com/rithikagantla/mcp-scanner"
 
 LEVELS = {
     Severity.CRITICAL: "error",

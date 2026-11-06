@@ -1,7 +1,6 @@
-# OWNER: Ankitha · WEEK 2–4
 # `docker compose -f corpus/docker-compose.yml up --build` runs every corpus server in isolation.
-# network_mode: none — corpus servers never need the network (required for the dynamic harness).
-# stdin_open keeps stdio servers alive. TODO: add a service per new server folder.
+# network_mode: none — corpus servers never need the network.
+# stdin_open keeps stdio servers alive. Add a service per new server folder.
 
 x-corpus-server: &corpus-server
   build: .

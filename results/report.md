@@ -71,7 +71,7 @@ Why each change was made:
 
 Both labels were reviewed and are correct: these tools are clean, so the rules are wrong. Neither
 was tuned away, because the fix should be general rather than fitted to these two tools. Tracked
-in #18.
+separately. Both stay in the score, and they are shown in the demo.
 
 | Finding | Why the rule fired | Rule change to consider |
 |---|---|---|
@@ -103,6 +103,7 @@ official reference project and are written to be well behaved.
 - **No external comparison yet.** Snyk agent-scan and mcp-guardbench were not run. We make no claim
   of beating other scanners, and the 33-server audit (6 of 27 detections genuine) used different
   servers, so its figure cannot be compared with ours.
-- **Static only.** Rug pulls and output injection need the dynamic harness, which is not built.
+- **Static only.** Rug pulls and output injection need a dynamic harness. We cut that stretch goal,
+  along with the LLM classifier, to protect the benchmark.
 - **Not everything fires.** No corpus finding reaches Critical, because `05` hides its instruction
   in base64 and STATIC-001 does not read the decoded text. That is a real detection gap.

@@ -1,7 +1,6 @@
 """
 00_hello — clean baseline server. Every other corpus server copies this structure.
 
-OWNER: Ankitha · Must stay CLEAN (label.yaml has no vulnerabilities). Do not add the
 "banana" demo tool here.
 """
 

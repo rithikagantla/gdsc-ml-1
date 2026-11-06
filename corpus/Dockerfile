@@ -1,4 +1,3 @@
-# OWNER: Ankitha · WEEK 2–4
 # One image runs any corpus server: `docker run ... python servers/<name>/server.py`
 FROM python:3.12-slim
 WORKDIR /corpus

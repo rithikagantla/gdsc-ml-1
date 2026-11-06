@@ -1,8 +1,6 @@
 """
 STATIC-001 · Imperative text aimed at the model -> VulnClass.TOOL_POISONING
 
-OWNER: Raiyan · WEEK 3 (v1) / WEEK 5 (tuning)
-
 HOW IT WORKS
     A *scored* phrase list for text addressed to the AI, not the user. Flag only when the total
     score passes THRESHOLD — never on a single word.
@@ -13,12 +11,6 @@ HOW IT WORKS
 FALSE-POSITIVE TRAP
     Normal help text says "Use this tool when..." or "Always pass absolute paths". Keep an
     ALLOWLIST of benign patterns that subtract score. Test against samples/*.tools.json.
-
-STEPS
-    [ ] Lowercase + normalize whitespace before matching.
-    [ ] Score = sum(weights of matched phrases) - allowlist credits.
-    [ ] evidence = the matched sentence(s), verbatim.
-    [ ] Tests: positive on corpus 01_hidden_instructions, negative on every samples/ description.
 """
 
 from __future__ import annotations

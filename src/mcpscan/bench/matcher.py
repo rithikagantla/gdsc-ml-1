@@ -1,18 +1,11 @@
 """
 Matcher — line up findings with ground-truth labels.
 
-OWNER: Arnav · WEEK 4
-
 RULES (from the sprint guide)
     Key = (server, tool, vuln_class). Several findings with the same key count ONCE.
       True positive : finding key is in the labels
       False positive: finding key is NOT in the labels (tools with no label must be clean)
       False negative: label with no matching finding
-
-STEPS
-    [ ] match(findings, labels) -> MatchResult with tp / fp / fn lists of keys
-    [ ] Keep the original Finding objects for FPs so the report can quote evidence.
-    [ ] tests/test_matcher.py: duplicates count once; unlabeled tool -> FP; missed label -> FN.
 """
 
 from __future__ import annotations

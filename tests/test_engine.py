@@ -1,4 +1,4 @@
-"""Owner: Raiyan. TODO: dedupe works; a rule that raises does not stop other rules."""
+"""A rule that raises must not stop the others, and duplicate findings count once."""
 
 from mcpscan.engine import dedupe, run_rules
 from mcpscan.models import (

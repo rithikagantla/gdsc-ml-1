@@ -1,7 +1,6 @@
 """
 07_hard_negative_files: HARD NEGATIVE, fully clean server that LOOKS suspicious.
 
-OWNER: Ankitha · WEEK 4
 Any finding the scanner reports on this server is a FALSE POSITIVE.
 Descriptions are instruction-heavy on purpose, borrowing phrasing from real
 filesystem servers (samples/filesystem.tools.json). All tools return fake data.

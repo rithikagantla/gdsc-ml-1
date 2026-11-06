@@ -1,8 +1,6 @@
 """
 STATIC-003 · Hidden or encoded text  ->  VulnClass.HIDDEN_TEXT
 
-OWNER: Raiyan · WEEK 4
-
 HOW IT WORKS
     Flag text a human reviewer would not see but the model reads:
       - Unicode format chars (category "Cf"): zero-width space U+200B, ZWJ, bidi controls
@@ -14,10 +12,6 @@ HOW IT WORKS
 FALSE-POSITIVE TRAP
     Emoji and non-English text use unusual Unicode too. Check `unicodedata.category()`,
     NOT "is it non-ASCII". Emoji ZWJ sequences (family emoji) are legitimate.
-
-STEPS
-    [ ] evidence = repr() of the hidden span so invisible chars are visible in reports.
-    [ ] Tests: zero-width, bidi, base64, HTML comment positives; Chinese/emoji negatives.
 """
 
 from __future__ import annotations

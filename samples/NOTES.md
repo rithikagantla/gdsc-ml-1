@@ -1,6 +1,6 @@
 # Attacker's-eye notes on public servers
 
-OWNER: Raiyan. These are legitimate servers, so anything that looks suspicious is a **likely
+These are legitimate servers, so anything that looks suspicious is a **likely
 false positive** for our scanner — exactly what we want to catch early.
 
 | Server | Tool count | Longest description (chars) | Anything odd |

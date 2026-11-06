@@ -1,7 +1,6 @@
 """
 Data models — the contract every other file depends on.
 
-OWNER: Rithika (schema owner) · LOCKED Oct 20, 2026 (v1)
 Changes need Rithika's review + a heads-up in #ml-1. tests/test_models.py pins the enum values,
 so a change here fails CI until the test is updated on purpose.
 
@@ -11,12 +10,12 @@ WHAT THIS IS
     Findings to labels on the key (server, tool, vuln_class).
 
 DECISIONS (v1)
-    [x] VulnClass matches Arnav's top 6 in docs/threat-model.md, one class per attack type.
-    [x] TOOL_SHADOWING and NAME_COLLISION stay separate: shadowing hides in a description and
+    VulnClass matches Arnav's top 6 in docs/threat-model.md, one class per attack type.
+    TOOL_SHADOWING and NAME_COLLISION stay separate: shadowing hides in a description and
         targets another server's tool; collision is about the name itself. Different rules,
         different false-positive traps, so they get separate precision/recall rows.
-    [x] Rug pull and output injection are not classes: they are dynamic (stretch) and report as
-        TOOL_POISONING with location BEHAVIOR.
+    Rug pull and output injection are not classes: they need dynamic analysis and would
+        report as TOOL_POISONING with location BEHAVIOR.
 """
 
 from __future__ import annotations
@@ -39,7 +38,7 @@ class Location(str, Enum):
     NAME = "name"
     DESCRIPTION = "description"
     SCHEMA = "schema"
-    BEHAVIOR = "behavior"  # dynamic harness findings (stretch)
+    BEHAVIOR = "behavior"  # reserved for dynamic analysis; no current rule uses it
 
 
 class Severity(str, Enum):

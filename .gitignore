@@ -10,4 +10,4 @@ dist/
 .DS_Store
 .env
 practice/
-results/*.sarif
+*.sarif
