@@ -84,6 +84,17 @@ mcpscan bench corpus/                                                      # pre
 exits 1 when any finding meets the threshold, which is how CI blocks a PR. See
 [`docs/demo.md`](docs/demo.md) for the five-minute demo.
 
+## GitHub Action
+
+Add MCP scanning to a repo. Findings appear under Security > Code scanning, and the job fails at
+`fail-on` or above. The calling workflow needs `permissions: security-events: write`.
+
+```yaml
+- uses: rithikagantla/gdsc-ml-1@v1
+  with:
+    target-file: mcp-tools.json
+```
+
 ## Project website
 
 [`web/index.html`](web/index.html) explains the project, shows the benchmark results, and replays a
