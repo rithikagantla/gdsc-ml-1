@@ -126,14 +126,18 @@ def test_console_output_to_file(tmp_path, monkeypatch):
     assert "No findings" in out.read_text()
 
 
-def test_bench_before_runner_exists_is_friendly(tmp_path):
+def test_bench_on_empty_corpus_is_friendly_and_writes_nothing(tmp_path):
     (tmp_path / "servers").mkdir()
-    result = runner.invoke(app, ["bench", str(tmp_path)])
+    out = tmp_path / "out"
+    result = runner.invoke(app, ["bench", str(tmp_path), "--out", str(out)])
     assert result.exit_code == 2 and "Traceback" not in result.output
+    assert not out.exists()
 
 
 def test_bench_prints_metrics(tmp_path, monkeypatch):
-    (tmp_path / "servers").mkdir()
+    server = tmp_path / "servers" / "00_x"
+    server.mkdir(parents=True)
+    (server / "label.yaml").write_text("server: 00_x\n")
 
     async def fake_run(corpus, out):
         return {"overall": {"precision": 0.75, "recall": 0.5}}

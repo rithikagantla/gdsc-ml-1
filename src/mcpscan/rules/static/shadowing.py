@@ -19,7 +19,7 @@ FALSE-POSITIVE TRAP
 STEPS
     - Extract snake_case / camelCase identifiers from the description.
     - Ignore tools owned by the current server.
-    - Compare remaining identifiers against tools from other manifests.
+    - Compare remaining identifiers against other manifests' tools and popular names.
     - Require instruction-like wording near the referenced tool.
 """
 
@@ -76,6 +76,12 @@ def _known_external_tools(
 
             if normalized not in own_names:
                 external[normalized] = other_tool.name
+
+    for popular_name in context.popular_names:
+        normalized = _normalize_name(popular_name)
+
+        if normalized not in own_names:
+            external.setdefault(normalized, popular_name)
 
     return external
 

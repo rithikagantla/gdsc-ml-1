@@ -5,6 +5,7 @@ OWNER: Raiyan · Uncomment each rule as its file is implemented.
 """
 
 from mcpscan.rules.base import Rule, ScanContext
+from mcpscan.rules.scope.over_permission import OverPermissionRule
 from mcpscan.rules.static.credential_terms import CredentialTermsRule
 from mcpscan.rules.static.hidden_text import HiddenTextRule
 from mcpscan.rules.static.imperative_text import ImperativeTextRule
@@ -18,8 +19,7 @@ ALL_RULES: list[Rule] = [
     NameCollisionRule(),  # STATIC-004
     ShadowingRule(),  # STATIC-005
 
-    # Scope rules:
-    # OverPermissionRule(),  # SCOPE-001
+    OverPermissionRule(),  # SCOPE-001
 ]
 
 __all__ = ["ALL_RULES", "Rule", "ScanContext"]

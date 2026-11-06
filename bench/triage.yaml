@@ -1,13 +1,21 @@
 # Human triage of findings on public servers in samples/ (no labels exist there).
-# OWNER: Arnav · WEEK 5 — becomes the error-analysis section of results/report.md.
+# Reviewed Nov 5, 2026. Becomes the error-analysis section of results/report.md.
 #
-# One entry per finding. verdict: real_issue | false_positive
-# why: one sentence on why the rule fired and whether the rule should change.
-#
-# - server: filesystem
-#   tool: write_file
-#   rule_id: STATIC-001
-#   evidence: "..."
-#   verdict: false_positive
-#   why: "'Always' + 'must' scored above threshold; benign usage instruction. Add to allowlist."
-findings: []
+# Current rules: 0 findings on 36 tools across 3 servers. The entries below are the findings from
+# the first run of SCOPE-001, kept so the report can show what tuning changed.
+# verdict: real_issue | false_positive
+findings:
+  - server: memory
+    tool: create_entities
+    rule_id: SCOPE-001
+    evidence: "purpose=math requests write via not read-only"
+    verdict: false_positive
+    why: "The description mentions add_observations, so the `add` keyword classified a graph tool as math."
+    fix: "Removed `add` from the math keywords in purposes.yaml. No longer fires."
+  - server: memory
+    tool: add_observations
+    rule_id: SCOPE-001
+    evidence: "purpose=math requests write via not read-only"
+    verdict: false_positive
+    why: "`add` is a verb here, not arithmetic, so a memory tool that writes looked over-scoped."
+    fix: "Removed `add` from the math keywords in purposes.yaml. No longer fires."

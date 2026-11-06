@@ -22,12 +22,17 @@ STEPS
 
 from __future__ import annotations
 
+from functools import lru_cache
+from importlib.resources import files
+
+import yaml
 from rapidfuzz.distance import Levenshtein
 
 from mcpscan.models import Finding, Location, ServerManifest, Tool, VulnClass
 from mcpscan.rules.base import Rule, ScanContext
 
 MAX_EDIT_DISTANCE = 2
+MIN_NEAR_MISS_LENGTH = 6  # short names like `add` and `get` are a couple of edits from anything
 
 GENERIC_NAMES: set[str] = {
     "search",
@@ -36,7 +41,16 @@ GENERIC_NAMES: set[str] = {
     "list",
     "get",
     "fetch",
+    "echo",
 }
+
+
+@lru_cache(maxsize=1)
+def load_popular_names() -> frozenset[str]:
+    """Well-known tool names shipped with the package (popular_tools.yaml)."""
+    text = files("mcpscan.rules.static").joinpath("popular_tools.yaml").read_text("utf-8")
+    data = yaml.safe_load(text)
+    return frozenset(data["from_samples"]) | frozenset(data["high_value"])
 
 
 class NameCollisionRule(Rule):
@@ -77,11 +91,13 @@ class NameCollisionRule(Rule):
                         break
 
         # 2. Near-misses against popular names collected from benign samples.
-        for popular_name in context.popular_names:
-            candidate = popular_name.lower()
+        popular_lower = {name.lower() for name in context.popular_names}
 
-            if current_name == candidate:
-                continue
+        if len(current_name) < MIN_NEAR_MISS_LENGTH or current_name in popular_lower:
+            return findings
+
+        for popular_name in sorted(context.popular_names):
+            candidate = popular_name.lower()
 
             distance = Levenshtein.distance(
                 current_name,
