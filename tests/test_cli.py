@@ -88,3 +88,57 @@ def test_needs_exactly_one_source(tmp_path):
     assert runner.invoke(app, ["scan"]).exit_code == 2
     both = ["scan", "--file", sample_file(tmp_path), "--", "python", "x.py"]
     assert runner.invoke(app, both).exit_code == 2
+
+
+def test_scan_json_output(tmp_path, monkeypatch):
+    monkeypatch.setattr(cli, "run_rules", lambda manifests: [finding(Severity.HIGH)])
+    out = tmp_path / "out" / "r.json"
+    args = ["scan", "--file", sample_file(tmp_path), "-f", "json", "-o", str(out)]
+    result = runner.invoke(app, args)
+    assert result.exit_code == 0
+    data = json.loads(out.read_text())
+    assert data["server"] == "x" and data["tools"] == ["a"]
+    assert data["findings"][0]["severity"] == "high"
+
+
+def test_scan_sarif_to_stdout_points_at_source_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(cli, "run_rules", lambda manifests: [finding()])
+    path = sample_file(tmp_path)
+    result = runner.invoke(app, ["scan", "--file", path, "--format", "sarif"])
+    assert result.exit_code == 0
+    sarif = json.loads(result.output)
+    location = sarif["runs"][0]["results"][0]["locations"][0]
+    assert location["physicalLocation"]["artifactLocation"]["uri"].endswith("x.tools.json")
+
+
+def test_fail_on_threshold(tmp_path, monkeypatch):
+    path = sample_file(tmp_path)
+    monkeypatch.setattr(cli, "run_rules", lambda manifests: [finding(Severity.MEDIUM)])
+    assert runner.invoke(app, ["scan", "--file", path, "--fail-on", "high"]).exit_code == 0
+    assert runner.invoke(app, ["scan", "--file", path, "--fail-on", "medium"]).exit_code == 1
+
+
+def test_console_output_to_file(tmp_path, monkeypatch):
+    monkeypatch.setattr(cli, "run_rules", lambda manifests: [])
+    out = tmp_path / "report.txt"
+    args = ["scan", "--file", sample_file(tmp_path), "-o", str(out)]
+    assert runner.invoke(app, args).exit_code == 0
+    assert "No findings" in out.read_text()
+
+
+def test_bench_before_runner_exists_is_friendly(tmp_path):
+    (tmp_path / "servers").mkdir()
+    result = runner.invoke(app, ["bench", str(tmp_path)])
+    assert result.exit_code == 2 and "Traceback" not in result.output
+
+
+def test_bench_prints_metrics(tmp_path, monkeypatch):
+    (tmp_path / "servers").mkdir()
+
+    async def fake_run(corpus, out):
+        return {"overall": {"precision": 0.75, "recall": 0.5}}
+
+    monkeypatch.setattr(cli, "run_benchmark", fake_run)
+    result = runner.invoke(app, ["bench", str(tmp_path), "--out", str(tmp_path / "r")])
+    assert result.exit_code == 0
+    assert "0.75" in result.output and "0.50" in result.output
