@@ -60,6 +60,11 @@ why the rule fired.
 - The corpus and labels are open source, so anyone can benchmark a scanner against them.
 - Hard rule: we only attack servers we wrote; public servers get read-only analysis.
 
+## Optional visual: the project website
+Open `web/index.html`, go to Watch a scan, and press **Play all servers** for a recorded replay of every scan, ending on
+the same result as `bench`. Use it for the audience view, and keep the live terminal commands above
+as the proof that the tool really runs.
+
 ## If something breaks live
 - A server will not start: scan saved JSON instead, which needs no server:
   `mcpscan scan --file samples/filesystem.tools.json`

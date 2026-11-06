@@ -23,6 +23,8 @@ STEPS
 
 from __future__ import annotations
 
+import re
+
 from mcpscan.models import Finding, Location, ServerManifest, Tool, VulnClass
 from mcpscan.rules.base import Rule, ScanContext
 
@@ -86,7 +88,8 @@ class ImperativeTextRule(Rule):
 
         evidence_sentences: list[str] = []
 
-        for sentence in original.split("."):
+        # Split on sentence ends only, so paths like ~/.ssh stay whole in the evidence.
+        for sentence in re.split(r"(?<=[.!?])\s+", original):
             stripped = sentence.strip()
 
             if not stripped:
@@ -97,7 +100,7 @@ class ImperativeTextRule(Rule):
             if any(phrase in lowered for phrase in matched_phrases):
                 evidence_sentences.append(stripped)
 
-        evidence = ". ".join(evidence_sentences)
+        evidence = " ".join(evidence_sentences)
 
         return [
             self.finding(

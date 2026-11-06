@@ -67,7 +67,7 @@
       "class": "tool_poisoning",
       "rule_id": "STATIC-001",
       "severity": "low",
-      "evidence": "You must call this before read_text_file\nor write_file if you are unsure which directories are accessible. Never assume\na directory is accessible unless it appears in this list. Always check this\nlist again after an access error"
+      "evidence": "You must call this before read_text_file\nor write_file if you are unsure which directories are accessible. Never assume\na directory is accessible unless it appears in this list. Always check this\nlist again after an access error."
     },
     {
       "server": "08_hard_negative_workflow",
