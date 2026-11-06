@@ -84,10 +84,10 @@ mcpscan bench corpus/                                                      # pre
 exits 1 when any finding meets the threshold, which is how CI blocks a PR. See
 [`docs/demo.md`](docs/demo.md) for the five-minute demo.
 
-## Web explorer
+## Project website
 
-[`web/index.html`](web/index.html) shows the benchmark results and replays a recorded scan of each
-test server, step by step. It is one self-contained file, so open it in any browser. The page does
+[`web/index.html`](web/index.html) explains the project, shows the benchmark results, and replays a
+recorded scan of each test server, step by step. It is one self-contained file, so open it in any browser. The page does
 no scanning itself. After a rule or corpus change, refresh it:
 
 ```bash

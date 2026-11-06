@@ -15,6 +15,7 @@
   --serious: #a8481d; --serious-soft: #fce8df;
   --critical: #b62c2c; --critical-soft: #fbe3e3;
   --neutral-soft: #e9edf3;
+  --band: #123a7a; --band-ink: #ffffff; --band-dim: #c3d4f0; --band-line: #ffffff33;
   --series-1: #2a78d6; --series-2: #eb6834;
   --sans: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
@@ -31,6 +32,7 @@
     --serious: #f2a17f; --serious-soft: #3d2216;
     --critical: #ff9a9a; --critical-soft: #431c1f;
     --neutral-soft: #242d3d;
+    --band: #16284a;
     --series-1: #3987e5; --series-2: #d95926;
     color-scheme: dark;
   }
@@ -46,6 +48,7 @@
   --serious: #f2a17f; --serious-soft: #3d2216;
   --critical: #ff9a9a; --critical-soft: #431c1f;
   --neutral-soft: #242d3d;
+  --band: #16284a;
   --series-1: #3987e5; --series-2: #d95926;
   color-scheme: dark;
 }
@@ -63,32 +66,60 @@ a { color: var(--accent); }
   .wrap { padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); }
 }
 
-/* Top bar */
-.top { background: var(--surface); border-bottom: 1px solid var(--line); }
-.top .wrap { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; padding-block: 12px; }
-.brand { font-family: var(--mono); font-weight: 600; font-size: 16px; }
-.tag { color: var(--ink-3); font-size: 13px; }
-.top-meta { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; color: var(--ink-3); }
+/* Site header */
+html { scroll-behavior: smooth; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--surface); }
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--surface); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 8px 28px; padding-block: 12px; }
+.brand { font-family: var(--mono); font-weight: 600; font-size: 17px; color: var(--ink); text-decoration: none; }
+.nav-links { display: flex; gap: 22px; margin-left: auto; font-size: 14px; }
+.nav-links a { color: var(--ink-2); text-decoration: none; white-space: nowrap; }
+.nav-links a:hover { color: var(--ink); }
+.nav-cta { font-size: 14px; font-weight: 500; text-decoration: none; color: var(--surface); background: var(--accent); padding: 6px 13px; border-radius: 6px; white-space: nowrap; }
+@media (max-width: 820px) { .nav-links { display: none; } .nav-cta { margin-left: auto; } }
 
-/* Result headline */
-.headline { padding-block: 32px 24px; display: grid; gap: 24px; }
-.headline h1 { font-size: clamp(25px, 3.6vw, 36px); line-height: 1.18; font-weight: 600; letter-spacing: -.012em; max-width: 25em; text-wrap: balance; }
-.headline .sub { color: var(--ink-2); max-width: 68ch; margin-top: 12px; }
-.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); background: var(--surface); border: 1px solid var(--line); border-radius: 8px; }
-.stat { padding: 14px 18px; min-width: 0; border-left: 1px solid var(--line); }
-.stat:first-child { border-left: 0; }
-.stat .k { font-size: 13px; color: var(--ink-2); }
-.stat .v { font: 600 30px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
-.stat .n { font-size: 12.5px; color: var(--ink-3); }
-@media (max-width: 720px) {
-  .stat { border-left: 0; border-top: 1px solid var(--line); }
-  .stat:first-child { border-top: 0; }
-}
+/* Hero */
+.hero { background: var(--surface); border-bottom: 1px solid var(--line); padding-block: 0; }
+.hero .wrap { display: grid; gap: 36px; padding-block: 64px; align-items: center; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 980px) { .hero .wrap { grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: 56px; } }
+.eyebrow { font-size: 13px; font-weight: 600; color: var(--accent); margin-bottom: 12px; }
+.hero h1 { font-size: clamp(32px, 4.6vw, 50px); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; text-wrap: balance; }
+.hero .sub { color: var(--ink-2); font-size: 17px; max-width: 54ch; margin-top: 18px; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.cta a { text-decoration: none; }
+.btn.lg { padding: 10px 18px; font-size: 15px; display: inline-block; }
+.hero-term { background: var(--term-bg); color: var(--term-ink); border-radius: 8px; min-width: 0; overflow: hidden; }
+.hero-term .bar { padding: 10px 14px; color: var(--term-dim); font-size: 12.5px; border-bottom: 1px solid #ffffff1a; }
+.hero-term .log { min-height: 0; max-height: none; overflow: visible; }
+
+/* Blurb band */
+.blurb { background: var(--band); color: var(--band-ink); padding-block: 0; }
+.blurb .wrap { padding-block: 64px; display: grid; gap: 36px; }
+.blurb-label { font-size: 13px; font-weight: 600; color: var(--band-dim); }
+.blurb-text { font-size: clamp(27px, 3.9vw, 42px); line-height: 1.2; font-weight: 500; letter-spacing: -.012em; max-width: 24em; text-wrap: balance; margin-top: 12px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 24px; border-top: 1px solid var(--band-line); padding-top: 24px; }
+.stat { min-width: 0; }
+.stat .k { font-size: 13.5px; color: var(--band-dim); }
+.stat .v { font: 600 34px/1.2 var(--mono); font-variant-numeric: tabular-nums; }
+.stat .n { font-size: 13px; color: var(--band-dim); }
 
 /* Section shell */
-section { padding-block: 22px; }
-.sec-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: end; gap: 10px 24px; margin-bottom: 14px; }
-.sec-head p { color: var(--ink-2); max-width: 72ch; font-size: 14px; }
+section { padding-block: 64px; scroll-margin-top: 58px; }
+section.alt { background: var(--surface); border-block: 1px solid var(--line); }
+section.alt .card { background: var(--bg); }
+.sec-head { margin-bottom: 26px; }
+.sec-head h2 { font-size: clamp(24px, 3vw, 30px); line-height: 1.2; font-weight: 600; letter-spacing: -.01em; text-wrap: balance; }
+.sec-head p { color: var(--ink-2); max-width: 66ch; font-size: 16px; margin-top: 8px; }
+.grid-3 { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.note-line { color: var(--ink-2); max-width: 70ch; margin-top: 22px; }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 24px; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); counter-reset: step; }
+.steps li { counter-increment: step; min-width: 0; }
+.steps li::before { content: counter(step); display: grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font: 600 13px var(--mono); margin-bottom: 10px; }
+.steps b { display: block; font-weight: 600; margin-bottom: 2px; }
+.steps span { color: var(--ink-2); font-size: 14.5px; }
+@media (min-width: 980px) { .two.start { grid-template-columns: minmax(0, 1fr) minmax(0, 1.75fr); align-items: start; } }
+.code { margin: 8px 0 0; padding: 12px 14px; border-radius: 6px; background: var(--term-bg); color: var(--term-ink); font: 13px/1.65 var(--mono); overflow-x: auto; white-space: pre; }
 
 /* Explorer */
 .explorer { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
@@ -113,7 +144,7 @@ section { padding-block: 22px; }
 .panel-head h3 { font-size: 18px; font-weight: 600; }
 .panel-head p { color: var(--ink-2); font-size: 14px; }
 .controls { display: flex; flex-wrap: wrap; gap: 8px; }
-.btn { border: 1px solid var(--line); background: var(--surface); padding: 6px 13px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; }
+.btn { border: 1px solid var(--line); color: var(--ink); background: var(--surface); padding: 6px 13px; border-radius: 6px; font-weight: 500; font-size: 14px; cursor: pointer; }
 .btn:hover { background: var(--surface-2); }
 .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--surface); }
 .btn.primary:hover { filter: brightness(1.08); background: var(--accent); }
@@ -195,35 +226,87 @@ ul.plain { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
 ul.plain b { font-weight: 600; }
 .limits li { font-size: 14px; color: var(--ink-2); }
 .limits b { color: var(--ink); }
-footer { border-top: 1px solid var(--line); margin-top: 18px; color: var(--ink-3); font-size: 13px; }
-footer .wrap { padding-block: 16px 24px; display: flex; flex-wrap: wrap; gap: 6px 24px; justify-content: space-between; }
+footer { color: var(--ink-3); font-size: 13.5px; }
+footer .wrap { padding-block: 32px 40px; display: flex; flex-wrap: wrap; gap: 10px 32px; justify-content: space-between; }
+footer b { color: var(--ink); font-family: var(--mono); font-weight: 600; }
 @media (prefers-reduced-motion: reduce) { .tool, .finding { transition: none; } }
 </style>
 
-<header class="top">
+<header class="nav">
   <div class="wrap">
-    <span class="brand">mcpscan</span>
-    <span class="tag">Security scanner and benchmark for MCP servers · GDSC ML-1</span>
-    <span class="top-meta"><span id="run-meta"></span><a href="https://github.com/rithikagantla/gdsc-ml-1">GitHub repo</a></span>
+    <a class="brand" href="#top">mcpscan</a>
+    <nav class="nav-links" aria-label="Page sections">
+      <a href="#problem">The problem</a>
+      <a href="#how">How it works</a>
+      <a href="#demo">Scan replay</a>
+      <a href="#results">Results</a>
+      <a href="#start">Get started</a>
+    </nav>
+    <a class="nav-cta" href="https://github.com/rithikagantla/gdsc-ml-1">GitHub</a>
   </div>
 </header>
 
-<main>
-  <div class="wrap headline">
-    <div>
-      <h1 id="lead"></h1>
-      <p class="sub">AI assistants treat a tool's description as instructions, and nothing sanitizes it. mcpscan reads those descriptions and schemas, flags what looks wrong, and is scored against a test set where we know the right answers.</p>
+<main id="top">
+  <div class="hero">
+    <div class="wrap">
+      <div>
+        <p class="eyebrow">Open-source security scanner for MCP servers</p>
+        <h1>Find the hidden instructions in your AI tools.</h1>
+        <p class="sub">mcpscan checks every tool's name, description and schema for attacks aimed at your AI assistant, then measures its own accuracy against a labeled test set.</p>
+        <div class="cta">
+          <a class="btn primary lg" href="#demo">Watch a scan</a>
+          <a class="btn lg" href="#start">Get started</a>
+        </div>
+      </div>
+      <div class="hero-term" aria-label="Example scanner output">
+        <div class="bar">Recorded scan of a poisoned weather tool</div>
+        <pre class="log" id="hero-log"></pre>
+      </div>
     </div>
-    <div class="stats" id="stats"></div>
   </div>
 
-  <section id="replay">
+  <div class="blurb" id="summary">
+    <div class="wrap">
+      <div>
+        <p class="blurb-label">Benchmark result</p>
+        <p class="blurb-text" id="blurb"></p>
+      </div>
+      <div class="stats" id="stats"></div>
+    </div>
+  </div>
+
+  <section id="problem">
     <div class="wrap">
       <div class="sec-head">
-        <div>
-          <h2>Watch a scan</h2>
-          <p>Pick a test server to replay how mcpscan handled it. This page replays a recorded run of the real scanner, so it does no scanning itself.</p>
-        </div>
+        <h2>AI assistants trust text nobody checks</h2>
+        <p>The Model Context Protocol connects AI assistants to outside tools. Each tool ships a description the assistant reads as instructions, and nothing sanitizes it. A malicious server can hide commands there, and the user never sees them.</p>
+      </div>
+      <div class="grid-3">
+        <div class="card"><h3>Tool poisoning</h3><p class="lede" style="margin:0">A weather tool's description tells the assistant to read an SSH key and keep quiet about it.</p></div>
+        <div class="card"><h3>Hidden text</h3><p class="lede" style="margin:0">Invisible characters and encoded comments carry instructions a person reviewing the tool never sees.</p></div>
+        <div class="card"><h3>Over-permission</h3><p class="lede" style="margin:0">A forecast tool asks for a file path it has no reason to need, the same least-privilege failure seen in cloud access control.</p></div>
+      </div>
+      <p class="note-line">Scanners for this exist, but false alarms make people stop running them. One published audit of 33 MCP servers found only 6 of 27 detections were genuine. So our headline is a measured accuracy score with every false alarm explained.</p>
+    </div>
+  </section>
+
+  <section id="how" class="alt">
+    <div class="wrap">
+      <div class="sec-head"><h2>How mcpscan works</h2></div>
+      <ol class="steps">
+        <li><b>Connect</b><span>Start a server or load saved tool data, and read every tool it offers. Public servers are only listed, never called.</span></li>
+        <li><b>Analyze</b><span>Six rules check for instructions aimed at the model, hidden text, lookalike names, credential requests and excess permissions.</span></li>
+        <li><b>Score</b><span>Each finding gets a severity from everything found on that tool, and quotes the exact evidence.</span></li>
+        <li><b>Measure</b><span>Findings are compared with labeled test servers to produce precision and recall, including clean decoys built to cause false alarms.</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Watch a scan</h2>
+        <p>Pick a test server to replay how mcpscan handled it. This is a recorded run of the real scanner, so the page does no scanning itself.</p>
       </div>
       <div class="explorer">
         <nav class="rail" id="rail" aria-label="Test servers"></nav>
@@ -249,34 +332,78 @@ footer .wrap { padding-block: 16px 24px; display: flex; flex-wrap: wrap; gap: 6p
     </div>
   </section>
 
-  <section id="results">
-    <div class="wrap two">
-      <div class="card">
-        <h3>Results by attack type</h3>
-        <p class="lede" id="class-lede"></p>
-        <div class="scroll"><table id="class-table"></table></div>
+  <section id="results" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Results</h2>
+        <p id="run-meta"></p>
       </div>
-      <div class="card">
-        <h3>How the number moved</h3>
-        <p class="lede">Each change is listed so the tuning can be checked. The first version caught just over half.</p>
-        <div class="legend" id="legend"></div>
-        <div class="chart" id="chart"></div>
+      <div class="two">
+        <div class="card">
+          <h3>By attack type</h3>
+          <p class="lede" id="class-lede"></p>
+          <div class="scroll"><table id="class-table"></table></div>
+        </div>
+        <div class="card">
+          <h3>How the number moved</h3>
+          <p class="lede">Each change is listed so the tuning can be checked. The first version caught just over half.</p>
+          <div class="legend" id="legend"></div>
+          <div class="chart" id="chart"></div>
+        </div>
       </div>
     </div>
   </section>
 
-  <section id="limits">
-    <div class="wrap two">
-      <div class="card">
-        <h3>What these numbers do not show</h3>
-        <p class="lede">The score measures our own test set. It does not measure MCP servers in general.</p>
-        <ul class="plain limits" id="limit-list"></ul>
+  <section id="start">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>Get started</h2>
+        <p>mcpscan needs Python 3.11 or newer.</p>
       </div>
-      <div class="card">
-        <h3>Real public servers</h3>
-        <p class="lede" id="public-lede"></p>
-        <div class="scroll"><table id="public-table"></table></div>
-        <p class="lede" style="margin:12px 0 0">We only list tools on public servers and never call them. Attack testing stays on servers we wrote.</p>
+      <div class="two start">
+        <div class="card">
+          <h3>Install</h3>
+          <pre class="code">git clone https://github.com/rithikagantla/gdsc-ml-1
+cd gdsc-ml-1
+python -m venv .venv
+source .venv/bin/activate
+pip install .</pre>
+        </div>
+        <div class="card">
+          <h3>Scan</h3>
+          <pre class="code"># Scan a server
+mcpscan scan -- python corpus/servers/01_hidden_instructions/server.py
+
+# Scan saved tool data
+mcpscan scan --file samples/filesystem.tools.json
+
+# Block a build on high-severity findings
+mcpscan scan --format sarif -o out.sarif --fail-on high -- python server.py
+
+# Run the benchmark
+mcpscan bench corpus/</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="limits" class="alt">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2>What these numbers do not show</h2>
+        <p>The score measures our own test set. It does not measure MCP servers in general.</p>
+      </div>
+      <div class="two">
+        <div class="card">
+          <h3>Limits</h3>
+          <ul class="plain limits" id="limit-list"></ul>
+        </div>
+        <div class="card">
+          <h3>Real public servers</h3>
+          <p class="lede" id="public-lede"></p>
+          <div class="scroll"><table id="public-table"></table></div>
+          <p class="lede" style="margin:12px 0 0">We only list tools on public servers and never call them. Attack testing stays on servers we wrote.</p>
+        </div>
       </div>
     </div>
   </section>
@@ -284,7 +411,7 @@ footer .wrap { padding-block: 16px 24px; display: flex; flex-wrap: wrap; gap: 6p
 
 <footer>
   <div class="wrap">
-    <span>To refresh this page: <code>mcpscan bench corpus/</code> then <code>python scripts/build_web.py</code></span>
+    <span><b>mcpscan</b> · Built by GDSC ML-1: Rithika (mentor), Ankitha, Raiyan, Arnav and Daniel</span>
     <span id="foot"></span>
   </div>
 </footer>
@@ -325,24 +452,29 @@ function serverChip(s) {
   return chip("c-neutral", "Clean");
 }
 
-/* Header and summary */
+/* Blurb and summary */
 function renderTop() {
   const o = DATA.overall, c = DATA.corpus;
   const flags = o.tp + o.fp;
-  $("lead").textContent = "mcpscan found all " + (o.tp + o.fn) + " planted vulnerabilities, and " + o.tp + " of its " + flags + " alerts were correct.";
-  $("run-meta").textContent = "Run " + DATA.date + " · commit " + DATA.commit;
+  $("blurb").textContent = "mcpscan found all " + (o.tp + o.fn) + " planted vulnerabilities, and " + o.tp + " of its " + flags + " alerts were correct.";
+  $("run-meta").textContent = "Measured on " + c.servers + " test servers, " + c.tools + " tools and " + c.labels + " labeled vulnerabilities.";
   const stats = [
     ["Precision", fmt(o.precision), o.tp + " of " + flags + " alerts correct"],
     ["Recall", fmt(o.recall), o.tp + " of " + (o.tp + o.fn) + " vulnerabilities found"],
     ["False alarms", String(o.fp), o.fn + " vulnerabilities missed"],
-    ["Test servers", String(c.servers), c.tools + " tools, " + c.labels + " labeled vulnerabilities"],
+    ["Test servers", String(c.servers), c.tools + " tools, " + c.labels + " labeled"],
   ];
   $("stats").replaceChildren(...stats.map(([k, v, n]) => {
     const box = el("div", "stat");
     box.append(el("div", "k", k), el("div", "v", v), el("div", "n", n));
     return box;
   }));
-  $("foot").textContent = DATA.rules.length + " rules · " + c.tools + " tools · commit " + DATA.commit;
+  $("foot").textContent = "Run " + DATA.date + " · commit " + DATA.commit + " · Showcase Nov 12, 2026";
+}
+
+function renderHero() {
+  const s = DATA.servers.find((x) => x.id === "01_hidden_instructions");
+  $("hero-log").replaceChildren(...logScript(s).map((l) => el("div", l.cls, l.text)));
 }
 
 /* Server rail */
@@ -683,6 +815,7 @@ function renderPublic() {
 
 /* Boot */
 renderTop();
+renderHero();
 renderRail();
 renderPipe();
 renderClasses();
