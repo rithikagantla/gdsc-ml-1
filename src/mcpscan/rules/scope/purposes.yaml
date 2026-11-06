@@ -10,7 +10,7 @@ weather:
   allowed: [network]
 
 math:
-  keywords: [add, sum, calculate, multiply, math]
+  keywords: [addition, sum, calculate, multiply, math]  # not `add`: usually a verb
   allowed: []
 
 time:

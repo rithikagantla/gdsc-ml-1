@@ -1,0 +1,55 @@
+# Well-known MCP tool names, used by STATIC-004 (typosquats) and STATIC-005 (shadowing).
+# Packaged with mcpscan so `pip install` users get it without the samples/ folder.
+#
+# from_samples: every tool in samples/*.tools.json. tests/test_static_rules.py keeps it in sync.
+# high_value:   common action tools attackers want to redirect. Hand-curated. send_email was
+#               added after the 03_tool_shadowing miss; results/report.md discloses that.
+
+from_samples:
+  - add_observations
+  - create_directory
+  - create_entities
+  - create_relations
+  - delete_entities
+  - delete_observations
+  - delete_relations
+  - directory_tree
+  - echo
+  - edit_file
+  - get-annotated-message
+  - get-env
+  - get-resource-links
+  - get-resource-reference
+  - get-structured-content
+  - get-sum
+  - get-tiny-image
+  - get_file_info
+  - gzip-file-as-resource
+  - list_allowed_directories
+  - list_directory
+  - list_directory_with_sizes
+  - move_file
+  - open_nodes
+  - read_file
+  - read_graph
+  - read_media_file
+  - read_multiple_files
+  - read_text_file
+  - search_files
+  - search_nodes
+  - simulate-research-query
+  - toggle-simulated-logging
+  - toggle-subscriber-updates
+  - trigger-long-running-operation
+  - write_file
+
+high_value:
+  - create_issue
+  - create_pull_request
+  - execute_command
+  - execute_sql
+  - post_message
+  - reply_email
+  - run_command
+  - send_email
+  - send_message

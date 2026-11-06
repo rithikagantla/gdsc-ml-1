@@ -28,6 +28,7 @@ import logging
 from mcpscan.models import Finding, ServerManifest
 from mcpscan.rules import ALL_RULES
 from mcpscan.rules.base import Rule, ScanContext
+from mcpscan.rules.static.name_collision import load_popular_names
 from mcpscan.severity import assign_severities
 
 
@@ -44,7 +45,7 @@ def run_rules(
             if rule.id in rule_ids
         ]
 
-    context = ScanContext(all_manifests=manifests)
+    context = ScanContext(all_manifests=manifests, popular_names=set(load_popular_names()))
 
     findings: list[Finding] = []
 
@@ -67,14 +68,7 @@ def run_rules(
                         exc,
                     )
 
-    findings = dedupe(findings)
-
-    try:
-        findings = assign_severities(findings)
-    except NotImplementedError:
-        pass
-
-    return findings
+    return assign_severities(dedupe(findings), manifests)
 
 
 def dedupe(findings: list[Finding]) -> list[Finding]:
