@@ -1,0 +1,32 @@
+# Runs our own action.yml on a real GitHub runner.
+name: Action test
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  clean-target:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./
+        with:
+          target-file: samples/filesystem.tools.json
+          upload-sarif: "false"
+
+  poisoned-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: scan
+        continue-on-error: true
+        uses: ./
+        with:
+          command: python corpus/servers/01_hidden_instructions/server.py
+      - name: The scan must fail the build on a high-severity finding
+        run: test "${{ steps.scan.outcome }}" = "failure"
