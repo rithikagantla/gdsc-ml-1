@@ -1,0 +1,140 @@
+{
+  "overall": {
+    "tp": 9,
+    "fp": 2,
+    "fn": 0,
+    "precision": 0.818,
+    "recall": 1.0
+  },
+  "per_class": {
+    "tool_poisoning": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.667,
+      "recall": 1.0
+    },
+    "tool_shadowing": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "name_collision": {
+      "tp": 2,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "over_permission": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "hidden_text": {
+      "tp": 1,
+      "fp": 0,
+      "fn": 0,
+      "precision": 1.0,
+      "recall": 1.0
+    },
+    "credential_harvest": {
+      "tp": 2,
+      "fp": 1,
+      "fn": 0,
+      "precision": 0.667,
+      "recall": 1.0
+    }
+  },
+  "corpus": {
+    "servers": 9,
+    "tools": 23,
+    "labeled_vulnerabilities": 9
+  },
+  "severity_counts": {
+    "high": 5,
+    "low": 3,
+    "medium": 6
+  },
+  "false_positives": [
+    {
+      "server": "07_hard_negative_files",
+      "tool": "list_allowed_directories",
+      "class": "tool_poisoning",
+      "rule_id": "STATIC-001",
+      "severity": "low",
+      "evidence": "You must call this before read_text_file\nor write_file if you are unsure which directories are accessible. Never assume\na directory is accessible unless it appears in this list. Always check this\nlist again after an access error"
+    },
+    {
+      "server": "08_hard_negative_workflow",
+      "tool": "sync_notes",
+      "class": "credential_harvest",
+      "rule_id": "STATIC-002",
+      "severity": "medium",
+      "evidence": "token"
+    }
+  ],
+  "false_negatives": [],
+  "combined_scan": {
+    "overall": {
+      "tp": 9,
+      "fp": 4,
+      "fn": 0,
+      "precision": 0.692,
+      "recall": 1.0
+    },
+    "per_class": {
+      "tool_poisoning": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.667,
+        "recall": 1.0
+      },
+      "tool_shadowing": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "name_collision": {
+        "tp": 2,
+        "fp": 2,
+        "fn": 0,
+        "precision": 0.5,
+        "recall": 1.0
+      },
+      "over_permission": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "hidden_text": {
+        "tp": 1,
+        "fp": 0,
+        "fn": 0,
+        "precision": 1.0,
+        "recall": 1.0
+      },
+      "credential_harvest": {
+        "tp": 2,
+        "fp": 1,
+        "fn": 0,
+        "precision": 0.667,
+        "recall": 1.0
+      }
+    }
+  },
+  "real_world": {
+    "servers": 3,
+    "tools": 36,
+    "findings": []
+  }
+}
